@@ -1,0 +1,80 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: #020617;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: white;
+}
+
+.login-box {
+  background: #0f172a;
+  padding: 40px 48px;
+  border-radius: 14px;
+  width: 320px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 28px;
+  font-weight: 600;
+}
+
+.field {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.field label {
+  font-size: 13px;
+  color: #cbd5f5;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: #020617;
+  color: white;
+}
+.field input::placeholder {
+  color: #64748b;
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #0ea5e9;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background: #0284c7;
+}
+
+.forgot {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.forgot a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+.forgot a:hover {
+  text-decoration: underline;
+}
