@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Slide Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Protect page -->
+<script>
+if (localStorage.getItem("loggedIn") !== "true") {
+  window.location.href = "index.html";
+}
+</script>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: #020617;
+  border-right: 1px solid #1e293b;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 14px 16px;
+  font-weight: bold;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header span {
+  font-size: 13px;
+  color: #cbd5f5;
+}
+
+.deck-list, .slide-list {
+  overflow-y: auto;
+}
+
+.deck-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #020617;
+  font-size: 14px;
+  color: #cbd5f5;
+}
+.deck-item:hover { background: #1e293b; }
+.deck-item.active {
+  background: #0ea5e9;
+  color: white;
+  font-weight: bold;
+}
+
+.slide-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #020617;
+  font-size: 13px;
+  color: #94a3b8;
+}
+.slide-item:hover { background: #1e293b; }
+.slide-item.active {
+  background: #334155;
+  color: white;
+}
+
+/* Viewer */
+.viewer {
+  flex: 1;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-toolbar {
+  height: 56px;
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.viewer-toolbar .left,
+.viewer-toolbar .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.viewer-toolbar button {
+  background: #1e293b;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.viewer-toolbar button:hover { background: #334155; }
+
+.slide-counter {
+  font-size: 13px;
+  color: #cbd5f5;
+}
+
+/* Stage */
+.viewer-stage {
+  flex: 1;
+  background: #020617;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.slide-frame {
+  width: 1280px;
+  height: 720px;
+  border: 1px solid #1e293b;
+  background: white;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+.slide-frame iframe,
+.slide-frame img {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+  background: white;
+}
+
+/* TRUE FULLSCREEN MODE */
+.fullscreen .sidebar,
+.fullscreen .viewer-toolbar {
+  display: none;
+}
+.fullscreen .viewer-stage {
+  background: black;
+}
+.fullscreen .slide-frame {
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  box-shadow: none;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { width: 220px; }
+  .slide-frame {
+    width: 90vw;
+    height: calc(90vw * 9 / 16);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      📚 Slide Library
+      <span id="userLabel"></span>
+    </div>
+
+    <div class="deck-list" id="deckList"></div>
+    <div class="slide-list" id="slideList"></div>
+  </div>
+
+  <!-- Viewer -->
+  <div class="viewer">
+
+    <!-- Toolbar -->
+    <div class="viewer-toolbar">
+      <div class="left">
+        <button onclick="prevSlide()">⬅ Prev</button>
+        <button onclick="nextSlide()">Next ➡</button>
+        <button onclick="enterFullscreen()">⛶ Slideshow</button>
+      </div>
+
+      <div class="center slide-counter" id="counter">– / –</div>
+
+      <div class="right">
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Stage -->
+    <div class="viewer-stage" id="stage">
+      <div class="slide-frame" id="slideFrameContainer"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ================================
+   USER DISPLAY
+================================ */
+const userLabel = document.getElementById("userLabel");
+const user = localStorage.getItem("user");
+if (user) userLabel.textContent = "👤 " + user;
+
+/* ================================
+   DATA (YOUR PRESENTATIONS)
+================================ */
+let decks = [
+  {
+    title: "TCA Cycle",
+    slides: [
+      "slides/tca/slide1.html",
+      "slides/tca/slide2.html",
+      "slides/tca/slide3.html",
+      "slides/tca/slide4.html"
+    ]
+  },
+  {
+    title: "Glycolysis",
+    slides: [
+      "slides/glycolysis/slide1.html",
+      "slides/glycolysis/slide2.html",
+      "slides/glycolysis/slide3.html"
+    ]
+  }
+];
+
+let currentDeck = 0;
+let currentSlide = 0;
+
+const deckList = document.getElementById("deckList");
+const slideList = document.getElementById("slideList");
+const counter = document.getElementById("counter");
+const slideFrameContainer = document.getElementById("slideFrameContainer");
+const app = document.getElementById("app");
+const stage = document.getElementById("stage");
+
+/* ================================
+   BUILD SIDEBAR
+================================ */
+function buildDeckList() {
+  deckList.innerHTML = "";
+  decks.forEach((deck, i) => {
+    const div = document.createElement("div");
+    div.className = "deck-item";
+    div.textContent = deck.title;
+    div.onclick = () => loadDeck(i);
+    deckList.appendChild(div);
+  });
+}
+
+function buildSlideList() {
+  slideList.innerHTML = "";
+  const slides = decks[currentDeck].slides;
+
+  slides.forEach((_, i) => {
+    const div = document.createElement("div");
+    div.className = "slide-item";
+    div.textContent = `Slide ${i + 1}`;
+    div.onclick = () => loadSlide(i);
+    slideList.appendChild(div);
+  });
+}
+
+/* ================================
+   LOADERS
+================================ */
+function loadDeck(index) {
+  currentDeck = index;
+  currentSlide = 0;
+  buildSlideList();
+  loadSlide(0);
+  updateDeckUI();
+}
+
+function loadSlide(index) {
+  currentSlide = index;
+  const url = decks[currentDeck].slides[index];
+
+  slideFrameContainer.innerHTML = "";
+
+  if (url.endsWith(".html")) {
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    slideFrameContainer.appendChild(iframe);
+  } else {
+    const img = document.createElement("img");
+    img.src = url;
+    slideFrameContainer.appendChild(img);
+  }
+
+  updateUI();
+}
+
+/* ================================
+   UI UPDATE
+================================ */
+function updateUI() {
+  document.querySelectorAll(".slide-item").forEach((el, i) => {
+    el.classList.toggle("active", i === currentSlide);
+  });
+  counter.textContent = `${currentSlide + 1} / ${decks[currentDeck].slides.length}`;
+}
+
+function updateDeckUI() {
+  document.querySelectorAll(".deck-item").forEach((el, i) => {
+    el.classList.toggle("active", i === currentDeck);
+  });
+}
+
+/* ================================
+   NAVIGATION
+================================ */
+function nextSlide() {
+  if (currentSlide < decks[currentDeck].slides.length - 1) {
+    loadSlide(currentSlide + 1);
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    loadSlide(currentSlide - 1);
+  }
+}
+
+/* ================================
+   TRUE FULLSCREEN API
+================================ */
+function enterFullscreen() {
+  if (app.requestFullscreen) {
+    app.requestFullscreen();
+  } else if (app.webkitRequestFullscreen) {
+    app.webkitRequestFullscreen();
+  } else if (app.msRequestFullscreen) {
+    app.msRequestFullscreen();
+  }
+  app.classList.add("fullscreen");
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+  app.classList.remove("fullscreen");
+}
+
+/* ================================
+   LOGOUT
+================================ */
+function logout() {
+  localStorage.removeItem("loggedIn");
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
+}
+
+/* ================================
+   KEYBOARD + CLICK CONTROL
+================================ */
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") nextSlide();
+  if (e.key === "ArrowLeft") prevSlide();
+  if (e.key === "Escape") exitFullscreen();
+  if (e.key === "f" || e.key === "F") enterFullscreen();
+});
+
+/* Click anywhere on slide → next */
+stage.addEventListener("click", () => {
+  if (document.fullscreenElement) nextSlide();
+});
+
+/* ================================
+   INIT
+================================ */
+buildDeckList();
+loadDeck(0);
+</script>
+
+</body>
+</html>
