@@ -1,4 +1,4 @@
-protect("viewer");
+protect("viewers");
 
 const table = document.getElementById("table");
 
