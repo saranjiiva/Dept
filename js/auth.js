@@ -1,37 +1,39 @@
-document.addEventListener("DOMContentLoaded", function () {
+const users = [
+  { username: "admin", password: "1234", role: "admin" },
+  { username: "viewer", password: "1234", role: "viewer" },
+  { username: "john", password: "1234", role: "user" },
+  { username: "mary", password: "1234", role: "user" }
+];
 
-  const form = document.getElementById("loginForm");
-  const forgotLink = document.getElementById("forgotLink");
+const form = document.getElementById("loginForm");
 
-  // Auto-login if already logged in
-  if (localStorage.getItem("loggedIn") === "true") {
-    window.location.href = "viewer.html";
+if (localStorage.getItem("loggedIn") === "true") {
+  const role = localStorage.getItem("role");
+  redirectByRole(role);
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+
+  const u = username.value.trim();
+  const p = password.value.trim();
+
+  const user = users.find(x => x.username === u && x.password === p);
+
+  if (!user) {
+    alert("Invalid credentials");
+    return;
   }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("username", user.username);
+  localStorage.setItem("role", user.role);
 
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!username || !password) {
-      alert("Please enter username and password");
-      return;
-    }
-
-    // Demo credentials
-    if (username === "admin" && password === "1234") {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("user", username);
-      window.location.href = "viewer.html";
-    } else {
-      alert("Invalid username or password");
-    }
-  });
-
-  forgotLink.addEventListener("click", function (e) {
-    e.preventDefault();
-    alert("Please contact administrator to reset your password.");
-  });
-
+  redirectByRole(user.role);
 });
+
+function redirectByRole(role) {
+  if (role === "admin") window.location.href = "admin.html";
+  else if (role === "viewer") window.location.href = "viewer.html";
+  else if (role === "user") window.location.href = "user.html";
+}
