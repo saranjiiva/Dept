@@ -1,14 +1,26 @@
-const records = [
-  { id: 1, owner: "john", name: "John", age: 21, diagnosis: "Anemia" },
-  { id: 2, owner: "mary", name: "Mary", age: 34, diagnosis: "Diabetes" },
-  { id: 3, owner: "john", name: "John", age: 21, diagnosis: "Vitamin D Deficiency" },
-  { id: 4, owner: "mary", name: "Mary", age: 34, diagnosis: "Hypothyroidism" }
+const database = [
+  {
+    id: "ST001",
+    name: "Arun Kumar",
+    theoryAttendance: 86,
+    practicalAttendance: 92,
+    theoryMarks: 78,
+    practicalMarks: 85
+  },
+  {
+    id: "ST002",
+    name: "Divya Priya",
+    theoryAttendance: 91,
+    practicalAttendance: 96,
+    theoryMarks: 88,
+    practicalMarks: 90
+  },
+  {
+    id: "ST003",
+    name: "Rahul S",
+    theoryAttendance: 74,
+    practicalAttendance: 80,
+    theoryMarks: 70,
+    practicalMarks: 76
+  }
 ];
-
-function getData() {
-  return JSON.parse(localStorage.getItem("db")) || records;
-}
-
-function saveData(data) {
-  localStorage.setItem("db", JSON.stringify(data));
-}
