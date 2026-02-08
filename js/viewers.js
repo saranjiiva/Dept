@@ -1,30 +1,32 @@
-protect("viewers");
+if (localStorage.getItem("role") !== "viewers") location.href = "index.html";
 
 const table = document.getElementById("table");
 
-function render() {
-  const data = getData();
-  table.innerHTML = `
-    <tr><th>ID</th><th>Name</th><th>Diagnosis</th><th>Owner</th></tr>
-    ${data.map(r => `
-      <tr>
-        <td>${r.id}</td>
-        <td>${r.name}</td>
-        <td>${r.diagnosis}</td>
-        <td>${r.owner}</td>
-      </tr>`).join("")}
+table.innerHTML = `
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Theory Att%</th>
+    <th>Practical Att%</th>
+    <th>Theory Marks</th>
+    <th>Practical Marks</th>
+  </tr>
+`;
+
+database.forEach(s => {
+  table.innerHTML += `
+    <tr>
+      <td>${s.id}</td>
+      <td>${s.name}</td>
+      <td>${s.theoryAttendance}</td>
+      <td>${s.practicalAttendance}</td>
+      <td>${s.theoryMarks}</td>
+      <td>${s.practicalMarks}</td>
+    </tr>
   `;
-}
+});
 
 function logout() {
   localStorage.clear();
-  window.location.href = "index.html";
+  location.href = "index.html";
 }
-
-function protect(role) {
-  if (localStorage.getItem("role") !== role) {
-    window.location.href = "index.html";
-  }
-}
-
-render();
