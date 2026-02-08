@@ -1,30 +1,21 @@
-protect("user");
+if (localStorage.getItem("role") !== "student") location.href = "index.html";
 
+const studentId = localStorage.getItem("studentId");
 const table = document.getElementById("table");
-const me = localStorage.getItem("username");
 
-function render() {
-  const data = getData().filter(r => r.owner === me);
-  table.innerHTML = `
-    <tr><th>ID</th><th>Name</th><th>Diagnosis</th></tr>
-    ${data.map(r => `
-      <tr>
-        <td>${r.id}</td>
-        <td>${r.name}</td>
-        <td>${r.diagnosis}</td>
-      </tr>`).join("")}
-  `;
-}
+const s = database.find(x => x.id === studentId);
+
+table.innerHTML = `
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>ID</td><td>${s.id}</td></tr>
+  <tr><td>Name</td><td>${s.name}</td></tr>
+  <tr><td>Theory Attendance %</td><td>${s.theoryAttendance}</td></tr>
+  <tr><td>Practical Attendance %</td><td>${s.practicalAttendance}</td></tr>
+  <tr><td>Theory Marks</td><td>${s.theoryMarks}</td></tr>
+  <tr><td>Practical Marks</td><td>${s.practicalMarks}</td></tr>
+`;
 
 function logout() {
   localStorage.clear();
-  window.location.href = "index.html";
+  location.href = "index.html";
 }
-
-function protect(role) {
-  if (localStorage.getItem("role") !== role) {
-    window.location.href = "index.html";
-  }
-}
-
-render();
