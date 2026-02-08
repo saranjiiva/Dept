@@ -1,6 +1,6 @@
 const users = [
   { username: "admin", password: "1234", role: "admin" },
-  { username: "viewer", password: "1234", role: "viewer" },
+  { username: "viewers", password: "1234", role: "viewer" },
   { username: "john", password: "1234", role: "user" },
   { username: "mary", password: "1234", role: "user" }
 ];
@@ -34,6 +34,6 @@ form.addEventListener("submit", e => {
 
 function redirectByRole(role) {
   if (role === "admin") window.location.href = "admin.html";
-  else if (role === "viewer") window.location.href = "viewer.html";
+  else if (role === "viewer") window.location.href = "viewers.html";
   else if (role === "user") window.location.href = "user.html";
 }
