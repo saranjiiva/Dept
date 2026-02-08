@@ -34,6 +34,6 @@ form.addEventListener("submit", e => {
 
 function redirectByRole(role) {
   if (role === "admin") window.location.href = "admin.html";
-  else if (role === "viewer") window.location.href = "viewers.html";
+  else if (role === "viewers") window.location.href = "viewers.html";
   else if (role === "user") window.location.href = "user.html";
 }
