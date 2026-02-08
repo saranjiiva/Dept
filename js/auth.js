@@ -1,6 +1,6 @@
 const users = [
   { username: "admin", password: "admin123", role: "admin" },
-  { username: "faculty", password: "faculty123", role: "viewer" },
+  { username: "faculty", password: "faculty123", role: "viewers" },
   { username: "arun", password: "1234", role: "student", studentId: "ST001" },
   { username: "divya", password: "1234", role: "student", studentId: "ST002" },
   { username: "rahul", password: "1234", role: "student", studentId: "ST003" }
@@ -20,6 +20,6 @@ document.getElementById("loginForm").addEventListener("submit", e => {
   if (user.studentId) localStorage.setItem("studentId", user.studentId);
 
   if (user.role === "admin") location.href = "admin.html";
-  if (user.role === "viewer") location.href = "viewer.html";
+  if (user.role === "viewers") location.href = "viewers.html";
   if (user.role === "student") location.href = "user.html";
 });
