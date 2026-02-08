@@ -1,39 +1,43 @@
-protect("admin");
+if (localStorage.getItem("role") !== "admin") location.href = "index.html";
 
 const table = document.getElementById("table");
 
-function render() {
-  const data = getData();
+function load() {
   table.innerHTML = `
-    <tr><th>ID</th><th>Name</th><th>Diagnosis</th><th>Owner</th><th>Action</th></tr>
-    ${data.map(r => `
-      <tr>
-        <td>${r.id}</td>
-        <td>${r.name}</td>
-        <td>${r.diagnosis}</td>
-        <td>${r.owner}</td>
-        <td>
-          <button onclick="del(${r.id})">Delete</button>
-        </td>
-      </tr>`).join("")}
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Theory Att%</th>
+      <th>Practical Att%</th>
+      <th>Theory Marks</th>
+      <th>Practical Marks</th>
+      <th>Edit</th>
+    </tr>
   `;
+
+  database.forEach((s, i) => {
+    table.innerHTML += `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td contenteditable="true" onblur="save(${i}, 'theoryAttendance', this.innerText)">${s.theoryAttendance}</td>
+        <td contenteditable="true" onblur="save(${i}, 'practicalAttendance', this.innerText)">${s.practicalAttendance}</td>
+        <td contenteditable="true" onblur="save(${i}, 'theoryMarks', this.innerText)">${s.theoryMarks}</td>
+        <td contenteditable="true" onblur="save(${i}, 'practicalMarks', this.innerText)">${s.practicalMarks}</td>
+        <td>✏️</td>
+      </tr>
+    `;
+  });
 }
 
-function del(id) {
-  const data = getData().filter(x => x.id !== id);
-  saveData(data);
-  render();
+function save(i, field, value) {
+  database[i][field] = value;
+  alert("Updated");
 }
 
 function logout() {
   localStorage.clear();
-  window.location.href = "index.html";
+  location.href = "index.html";
 }
 
-function protect(role) {
-  if (localStorage.getItem("role") !== role) {
-    window.location.href = "index.html";
-  }
-}
-
-render();
+load();
