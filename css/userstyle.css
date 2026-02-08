@@ -1,0 +1,97 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0ea5e9, #22c55e, #020617);
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: white;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Header ---------- */
+h2 {
+  margin: 0 0 18px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  background: linear-gradient(90deg, #7dd3fc, #6ee7b7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---------- Logout ---------- */
+button {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  transition: 0.2s ease;
+  margin-bottom: 16px;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.45);
+}
+
+/* ---------- Card Table ---------- */
+table {
+  width: 100%;
+  max-width: 520px;
+  border-collapse: collapse;
+  background: rgba(2, 6, 23, 0.75);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+/* ---------- Rows ---------- */
+th {
+  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+  color: #020617;
+  padding: 14px;
+  font-size: 14px;
+  text-align: left;
+}
+
+td {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: #e5e7eb;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Highlight ---------- */
+tr:hover td {
+  background: rgba(56,189,248,0.12);
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+}
