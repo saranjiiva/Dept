@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>College Attendance System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <meta name="description" content="College Attendance and Marks Management System">
+  <meta name="author" content="Biochemistry Department">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Favicon (optional) -->
+  <!-- <link rel="icon" href="images/favicon.png"> -->
+</head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Site Title -->
+    <div class="site-title">
+      College Attendance Portal
+    </div>
+
+    <!-- Login Box -->
+    <div class="login-box">
+      <h2>Sign In</h2>
+
+      <form id="loginForm">
+
+        <div class="field">
+          <label for="username">Email</label>
+          <input 
+            type="email" 
+            id="username" 
+            placeholder="Enter your email" 
+            required 
+            autofocus>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Enter your password" 
+            required>
+        </div>
+
+        <button type="submit">Login</button>
+
+      </form>
+
+      <div class="forgot">
+        <a href="#" id="forgotLink">Forgot Password?</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Firebase Login Script -->
+  <script type="module" src="js/login.js"></script>
+
+</body>
+</html>
