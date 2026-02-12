@@ -5,12 +5,13 @@
 <title>Viewer Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/viewersstyle.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
 <!-- ===== Sidebar ===== -->
 <div class="sidebar">
-  <h2 class="logo">Viewer Panel</h2>
+  <h2 class="logo">Faculty Panel</h2>
 
   <ul class="menu">
     <li onclick="showSection('dashboard')">Dashboard</li>
@@ -43,11 +44,10 @@
     <h2 id="pageTitle">Dashboard</h2>
   </div>
 
-  <!-- ===== Sections ===== -->
-
+  <!-- Dashboard -->
   <div id="dashboard" class="section active">
-    <h3>Welcome</h3>
-    <p>Select a category from the left panel to view or manage attendance.</p>
+    <h3>Welcome Faculty</h3>
+    <p>Select Attendance Taking to start session.</p>
   </div>
 
   <!-- Attendance View -->
@@ -66,8 +66,115 @@
     <h3>Attendance Taking</h3>
 
     <div class="attendance-box">
+
       <label>Class / Subject</label>
       <input id="subject" placeholder="Eg: Biochemistry Practical">
 
       <label>Validity Time (minutes)</label>
-      <input id="
+      <input id="minutes" type="number" value="2">
+
+      <label>Passkey (optional)</label>
+      <input id="passkey" placeholder="Eg: BIO123">
+
+      <button onclick="startAttendance()">Start Attendance</button>
+
+      <div id="timer" style="margin-top:10px;font-weight:bold;"></div>
+      <div id="qr" style="margin-top:15px;"></div>
+
+      <p id="locationStatus" style="margin-top:10px;color:#64748b;"></p>
+
+    </div>
+  </div>
+
+  <!-- Marks -->
+  <div id="marks-theory" class="section"><h3>Theory Marks</h3></div>
+  <div id="marks-practical" class="section"><h3>Practical Marks</h3></div>
+  <div id="marks-cat1" class="section"><h3>CAT 1 Marks</h3></div>
+  <div id="marks-cat2" class="section"><h3>CAT 2 Marks</h3></div>
+  <div id="marks-cat3" class="section"><h3>CAT 3 Marks</h3></div>
+
+</div>
+
+<script src="data/database.js"></script>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('pageTitle').innerText =
+    document.querySelector(`#${id} h3`).innerText;
+}
+
+function logout() {
+  alert("Logged out!");
+}
+
+/* ===================== ATTENDANCE SYSTEM ===================== */
+
+let sessionData = {};
+let timerInterval = null;
+
+function startAttendance() {
+  const subject = document.getElementById("subject").value.trim();
+  const minutes = document.getElementById("minutes").value;
+  const passkey = document.getElementById("passkey").value.trim();
+
+  if (!subject || !minutes) {
+    alert("Enter subject and validity time");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    sessionData = {
+      subject,
+      passkey,
+      lat,
+      lon,
+      expiry: Date.now() + minutes * 60000
+    };
+
+    localStorage.setItem("attendanceSession", JSON.stringify(sessionData));
+
+    generateQR(sessionData);
+    startTimer(sessionData.expiry);
+
+    document.getElementById("locationStatus").innerText =
+      `Location locked: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+
+  }, () => {
+    alert("Location permission required");
+  });
+}
+
+function generateQR(data) {
+  document.getElementById("qr").innerHTML = "";
+  new QRCode(document.getElementById("qr"), {
+    text: JSON.stringify(data),
+    width: 180,
+    height: 180
+  });
+}
+
+function startTimer(expiry) {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const remaining = expiry - Date.now();
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("timer").innerText = "Session expired";
+      localStorage.removeItem("attendanceSession");
+    } else {
+      const min = Math.floor(remaining / 60000);
+      const sec = Math.floor((remaining % 60000) / 1000);
+      document.getElementById("timer").innerText =
+        `Expires in ${min}:${sec.toString().padStart(2,'0')}`;
+    }
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
