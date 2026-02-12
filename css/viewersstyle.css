@@ -1,28 +1,107 @@
-.attendance-box {
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 10px;
-  max-width: 420px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1f5f9;
+  display: flex;
 }
 
-.attendance-box input {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0 10px;
-  border-radius: 6px;
-  border: 1px solid #cbd5f5;
-}
-
-.attendance-box button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 260px;
+  background: #020617;
   color: white;
-  cursor: pointer;
+  min-height: 100vh;
+  padding: 20px 15px;
 }
 
-#qr {
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.menu li:hover {
+  background: #0ea5e9;
+}
+
+.submenu-title {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  cursor: default;
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.submenu li {
+  font-size: 14px;
+  background: #020617;
+}
+
+.logout {
+  margin-top: 20px;
+  background: #dc2626;
+  text-align: center;
+}
+
+/* ===== Main Content ===== */
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Top Bar */
+.topbar {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Sections */
+.section {
+  display: none;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.section.active {
+  display: block;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
+}
+
+table th, table td {
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+table th {
+  background: #0ea5e9;
+  color: white;
 }
