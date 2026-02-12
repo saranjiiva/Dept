@@ -30,6 +30,11 @@
       <li onclick="showSection('marks-cat3')">CAT 3</li>
     </ul>
 
+    <li class="submenu-title">Attendance</li>
+    <ul class="submenu">
+      <li onclick="showSection('attendance-give')">Give Attendance</li>
+    </ul>
+
     <li class="logout" onclick="logout()">Logout</li>
   </ul>
 </div>
@@ -44,7 +49,7 @@
 
   <!-- ===== Sections ===== -->
 
-  <!-- Dashboard Summary -->
+  <!-- Dashboard -->
   <div id="dashboard" class="section active">
     <div class="profile-card">
       <h3>Student Name</h3>
@@ -54,7 +59,7 @@
     </div>
   </div>
 
-  <!-- Attendance -->
+  <!-- Attendance View -->
   <div id="attendance-monthly" class="section">
     <h3>Monthly Attendance</h3>
     <table id="monthlyAttendanceTable"></table>
@@ -91,6 +96,26 @@
     <table id="cat3MarksTable"></table>
   </div>
 
+  <!-- ===== Give Attendance ===== -->
+  <div id="attendance-give" class="section">
+    <h3>Give Attendance</h3>
+
+    <div class="attendance-box">
+      <p><strong>Method 1: Passkey</strong></p>
+      <input type="text" id="passkeyInput" placeholder="Enter attendance passkey">
+      <button onclick="submitPasskey()">Submit</button>
+    </div>
+
+    <div class="attendance-box">
+      <p><strong>Method 2: QR Code</strong></p>
+      <button onclick="startQR()">Scan QR Code</button>
+      <video id="qrVideo" autoplay playsinline></video>
+      <p id="qrStatus"></p>
+    </div>
+
+    <p id="attendanceStatus"></p>
+  </div>
+
 </div>
 
 <script src="data/database.js"></script>
@@ -106,6 +131,23 @@ function showSection(id) {
 
 function logout() {
   alert("Logged out!");
+}
+
+/* ===== Attendance Logic (Frontend only placeholders) ===== */
+function submitPasskey() {
+  const key = document.getElementById("passkeyInput").value;
+  if (!key) {
+    document.getElementById("attendanceStatus").innerText = "❌ Please enter passkey";
+    return;
+  }
+  document.getElementById("attendanceStatus").innerText =
+    "✅ Passkey submitted. Awaiting verification...";
+}
+
+function startQR() {
+  document.getElementById("qrStatus").innerText = "📷 Camera starting...";
+  document.getElementById("qrVideo").style.display = "block";
+  // Backend / QR decode logic will be added later
 }
 </script>
 
