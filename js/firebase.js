@@ -1,23 +1,22 @@
-// Firebase core
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+// Firebase v12 (latest consistent version)
 
-// Auth
-import { getAuth } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 
-// Firestore
-import { getFirestore } from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth } from 
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-// 🔴 Replace with your Firebase project config
+import { getFirestore } from 
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// 🔥 Your real Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "AIzaSyBJOFL_iqY3I4Otu7bxR0l3zFpCC-Z091I",
+  authDomain: "college-attendance-syste-c9ffd.firebaseapp.com",
+  projectId: "college-attendance-syste-c9ffd",
+  storageBucket: "college-attendance-syste-c9ffd.firebasestorage.app",
+  messagingSenderId: "471403216848",
+  appId: "1:471403216848:web:d79f65dc12f9e439b0c3d5"
 };
 
 // Initialize Firebase
