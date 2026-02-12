@@ -1,43 +1,81 @@
-if (localStorage.getItem("role") !== "admin") location.href = "index.html";
+import { auth, db } from "./firebase.js";
 
-const table = document.getElementById("table");
+import { 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-function load() {
-  table.innerHTML = `
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Theory Att%</th>
-      <th>Practical Att%</th>
-      <th>Theory Marks</th>
-      <th>Practical Marks</th>
-      <th>Edit</th>
-    </tr>
-  `;
+import { 
+  doc, 
+  getDoc 
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-  database.forEach((s, i) => {
-    table.innerHTML += `
-      <tr>
-        <td>${s.id}</td>
-        <td>${s.name}</td>
-        <td contenteditable="true" onblur="save(${i}, 'theoryAttendance', this.innerText)">${s.theoryAttendance}</td>
-        <td contenteditable="true" onblur="save(${i}, 'practicalAttendance', this.innerText)">${s.practicalAttendance}</td>
-        <td contenteditable="true" onblur="save(${i}, 'theoryMarks', this.innerText)">${s.theoryMarks}</td>
-        <td contenteditable="true" onblur="save(${i}, 'practicalMarks', this.innerText)">${s.practicalMarks}</td>
-        <td>✏️</td>
-      </tr>
-    `;
+
+// ==========================
+// 🔐 ADMIN AUTH PROTECTION
+// ==========================
+
+onAuthStateChanged(auth, async (user) => {
+
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+
+    if (!snap.exists() || snap.data().role !== "admin") {
+      alert("Access Denied");
+      window.location.href = "index.html";
+    }
+
+  } catch (error) {
+    console.error("Role check error:", error);
+    window.location.href = "index.html";
+  }
+
+});
+
+
+// ==========================
+// 📌 SIDEBAR SECTION SWITCH
+// ==========================
+
+const menuItems = document.querySelectorAll(".menu li[data-section]");
+const sections = document.querySelectorAll(".section");
+
+menuItems.forEach(item => {
+  item.addEventListener("click", () => {
+
+    const target = item.getAttribute("data-section");
+
+    // Remove active from all sections
+    sections.forEach(sec => sec.classList.remove("active"));
+
+    // Activate selected section
+    const activeSection = document.getElementById(target);
+    if (activeSection) {
+      activeSection.classList.add("active");
+    }
+
+  });
+});
+
+
+// ==========================
+// 🚪 LOGOUT FUNCTION
+// ==========================
+
+const logoutBtn = document.querySelector(".logout");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("Logout failed: " + error.message);
+    }
   });
 }
-
-function save(i, field, value) {
-  database[i][field] = value;
-  alert("Updated");
-}
-
-function logout() {
-  localStorage.clear();
-  location.href = "index.html";
-}
-
-load();
