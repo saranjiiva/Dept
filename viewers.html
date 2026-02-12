@@ -19,6 +19,7 @@
     <ul class="submenu">
       <li onclick="showSection('attendance-monthly')">Monthly Attendance</li>
       <li onclick="showSection('attendance-overall')">Overall Attendance</li>
+      <li onclick="showSection('attendance-taking')">Attendance Taking</li>
     </ul>
 
     <li class="submenu-title">Marks</li>
@@ -46,10 +47,10 @@
 
   <div id="dashboard" class="section active">
     <h3>Welcome</h3>
-    <p>Select a category from the left panel to view your data.</p>
+    <p>Select a category from the left panel to view or manage attendance.</p>
   </div>
 
-  <!-- Attendance -->
+  <!-- Attendance View -->
   <div id="attendance-monthly" class="section">
     <h3>Monthly Attendance</h3>
     <table id="monthlyAttendanceTable"></table>
@@ -60,52 +61,13 @@
     <table id="overallAttendanceTable"></table>
   </div>
 
-  <!-- Marks -->
-  <div id="marks-theory" class="section">
-    <h3>Theory Marks</h3>
-    <table id="theoryMarksTable"></table>
-  </div>
-
-  <div id="marks-practical" class="section">
-    <h3>Practical Marks</h3>
-    <table id="practicalMarksTable"></table>
-  </div>
-
-  <div id="marks-cat1" class="section">
-    <h3>CAT 1 Marks</h3>
-    <table id="cat1MarksTable"></table>
-  </div>
-
-  <div id="marks-cat2" class="section">
-    <h3>CAT 2 Marks</h3>
-    <table id="cat2MarksTable"></table>
-  </div>
-
-  <div id="marks-cat3" class="section">
-    <h3>CAT 3 Marks</h3>
-    <table id="cat3MarksTable"></table>
-  </div>
-<!-- Attendance Taking -->
+  <!-- ===== Attendance Taking ===== -->
   <div id="attendance-taking" class="section">
     <h3>Attendance Taking</h3>
-    <p>This module will be added after attendance system integration.</p>
-</div>
 
-<script src="data/database.js"></script>
-<script src="js/viewers.js"></script>
+    <div class="attendance-box">
+      <label>Class / Subject</label>
+      <input id="subject" placeholder="Eg: Biochemistry Practical">
 
-<script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('pageTitle').innerText =
-    document.querySelector(`#${id} h3`).innerText;
-}
-
-function logout() {
-  alert("Logged out!");
-}
-</script>
-
-</body>
-</html>
+      <label>Validity Time (minutes)</label>
+      <input id="
