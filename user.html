@@ -134,20 +134,13 @@ function logout() {
 }
 
 /* ===== Attendance Logic (Frontend only placeholders) ===== */
-function submitPasskey() {
-  const key = document.getElementById("passkeyInput").value;
-  if (!key) {
-    document.getElementById("attendanceStatus").innerText = "❌ Please enter passkey";
-    return;
-  }
-  document.getElementById("attendanceStatus").innerText =
-    "✅ Passkey submitted. Awaiting verification...";
-}
+<button id="scanBtn">Scan QR</button>
+<video id="preview"></video>
+<p id="result"></p>
 
-function startQR() {
-  document.getElementById("qrStatus").innerText = "📷 Camera starting...";
-  document.getElementById("qrVideo").style.display = "block";
-  // Backend / QR decode logic will be added later
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script type="module" src="js/user-attendance.js"></script>
+
 }
 </script>
 
