@@ -1,18 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/adminstyle.css">
 </head>
 <body>
 
-<h2>Admin Panel</h2>
-<button onclick="logout()">Logout</button>
+<!-- ===== Sidebar ===== -->
+<div class="sidebar">
+  <h2 class="logo">Admin Panel</h2>
 
-<table id="table"></table>
+  <ul class="menu">
+    <li onclick="showSection('dashboard')">Dashboard</li>
+
+    <li class="submenu-title">Students Attendance</li>
+    <ul class="submenu">
+      <li onclick="showSection('attendance-monthly')">Monthly Attendance</li>
+      <li onclick="showSection('attendance-overall')">Overall Attendance</li>
+    </ul>
+
+    <li class="submenu-title">Students Marks</li>
+    <ul class="submenu">
+      <li onclick="showSection('marks-theory')">Theory</li>
+      <li onclick="showSection('marks-practical')">Practical</li>
+      <li onclick="showSection('marks-cat1')">CAT 1</li>
+      <li onclick="showSection('marks-cat2')">CAT 2</li>
+      <li onclick="showSection('marks-cat3')">CAT 3</li>
+    </ul>
+
+    <li onclick="showSection('attendance-taking')">Attendance Taking</li>
+
+    <li class="logout" onclick="logout()">Logout</li>
+  </ul>
+</div>
+
+<!-- ===== Main Content ===== -->
+<div class="main">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <h2 id="pageTitle">Dashboard</h2>
+  </div>
+
+  <!-- ===== Sections ===== -->
+
+  <div id="dashboard" class="section active">
+    <h3>Welcome Admin</h3>
+    <p>Select a module from the left panel to manage student data.</p>
+  </div>
+
+  <!-- Attendance -->
+  <div id="attendance-monthly" class="section">
+    <h3>Monthly Attendance</h3>
+    <table id="monthlyAttendanceTable"></table>
+  </div>
+
+  <div id="attendance-overall" class="section">
+    <h3>Overall Attendance</h3>
+    <table id="overallAttendanceTable"></table>
+  </div>
+
+  <!-- Marks -->
+  <div id="marks-theory" class="section">
+    <h3>Theory Marks</h3>
+    <table id="theoryMarksTable"></table>
+  </div>
+
+  <div id="marks-practical" class="section">
+    <h3>Practical Marks</h3>
+    <table id="practicalMarksTable"></table>
+  </div>
+
+  <div id="marks-cat1" class="section">
+    <h3>CAT 1 Marks</h3>
+    <table id="cat1MarksTable"></table>
+  </div>
+
+  <div id="marks-cat2" class="section">
+    <h3>CAT 2 Marks</h3>
+    <table id="cat2MarksTable"></table>
+  </div>
+
+  <div id="marks-cat3" class="section">
+    <h3>CAT 3 Marks</h3>
+    <table id="cat3MarksTable"></table>
+  </div>
+
+  <!-- Attendance Taking -->
+  <div id="attendance-taking" class="section">
+    <h3>Attendance Taking</h3>
+    <p>This module will be added after attendance system integration.</p>
+  </div>
+
+</div>
 
 <script src="data/database.js"></script>
 <script src="js/admin.js"></script>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('pageTitle').innerText =
+    document.querySelector(`#${id} h3`).innerText;
+}
+
+function logout() {
+  alert("Logged out!");
+}
+</script>
+
 </body>
 </html>
