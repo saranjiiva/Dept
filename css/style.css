@@ -191,7 +191,7 @@ body::after {
 button {
   margin-top: 20px;
   height: 40px;
-  border-radius: 20px;
+  border-radius: 60px;
   border: none;
   cursor: pointer;
   font-size: 10px;
