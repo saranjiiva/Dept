@@ -1,8 +1,8 @@
 import { auth, db } from "./firebase.js";
 import { signInWithEmailAndPassword } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { doc, getDoc } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
