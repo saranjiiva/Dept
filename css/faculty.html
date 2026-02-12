@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Faculty Attendance Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial; background:#f1f5f9; padding:20px; }
+.card { background:white; padding:20px; border-radius:10px; max-width:400px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+button { margin-top:10px; padding:10px 15px; border:none; border-radius:6px;
+background:linear-gradient(90deg,#0ea5e9,#22c55e); color:white; cursor:pointer; }
+input { width:100%; padding:8px; margin:6px 0; border-radius:6px; border:1px solid #ccc; }
+#qr { margin-top:15px; }
+</style>
+</head>
+<body>
+
+<h2>Faculty Attendance Panel</h2>
+
+<div class="card">
+  <label>Subject / Class</label>
+  <input id="subject" placeholder="Eg: Biochemistry Practical">
+
+  <label>Attendance Validity (minutes)</label>
+  <input id="expiry" type="number" value="2">
+
+  <label>GPS Radius (meters)</label>
+  <input id="radius" type="number" value="50">
+
+  <button onclick="generateAttendance()">Generate Attendance</button>
+
+  <h3>Passcode:</h3>
+  <h2 id="passcode">----</h2>
+
+  <div id="qr"></div>
+
+  <p id="status"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="js/shared.js"></script>
+<script>
+function generateAttendance() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const radius = document.getElementById("radius").value;
+    const expiryMin = document.getElementById("expiry").value;
+    const subject = document.getElementById("subject").value || "Class";
+
+    const passcode = Math.floor(100000 + Math.random()*900000); // 6-digit
+    document.getElementById("passcode").innerText = passcode;
+
+    const expiresAt = Date.now() + expiryMin * 60000;
+
+    const attendanceSession = {
+      subject,
+      passcode,
+      lat,
+      lon,
+      radius,
+      expiresAt
+    };
+
+    // 🔴 BACKEND PLACEHOLDER (replace with Firebase later)
+    localStorage.setItem("attendanceSession", JSON.stringify(attendanceSession));
+
+    // QR payload
+    const qrData = JSON.stringify(attendanceSession);
+
+    document.getElementById("qr").innerHTML = "";
+    new QRCode(document.getElementById("qr"), qrData);
+
+    document.getElementById("status").innerText =
+      "✅ Attendance session active for " + expiryMin + " minutes";
+  },
+  err => alert("GPS permission required"));
+}
+</script>
+
+</body>
+</html>
