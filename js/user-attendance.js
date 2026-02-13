@@ -59,6 +59,35 @@ document.getElementById("scanBtn").addEventListener("click", () => {
           "Attendance marked successfully";
 
         html5QrCode.stop();
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// Before adding attendance
+const q = query(
+  collection(db, "attendanceRecords"),
+  where("sessionId", "==", data.sessionId),
+  where("studentId", "==", auth.currentUser.uid)
+);
+
+const existing = await getDocs(q);
+
+if (!existing.empty) {
+  alert("Attendance already marked");
+  return;
+}
+
+await addDoc(collection(db, "attendanceRecords"), {
+  sessionId: data.sessionId,
+  studentId: auth.currentUser.uid,
+  studentEmail: auth.currentUser.email,
+  timestamp: serverTimestamp()
+});
 
       });
 
