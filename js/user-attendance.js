@@ -88,6 +88,10 @@ await addDoc(collection(db, "attendanceRecords"), {
   studentEmail: auth.currentUser.email,
   timestamp: serverTimestamp()
 });
+if (Date.now() > data.expiry) {
+  alert("Session expired");
+  return;
+}
 
       });
 
