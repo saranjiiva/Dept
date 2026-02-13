@@ -45,6 +45,17 @@ document.getElementById("startAttendance").addEventListener("click", async () =>
 
     document.getElementById("status").innerText =
       "Attendance started. Students scan now.";
+const expiryTime = Date.now() + (2 * 60 * 1000);
+
+await addDoc(collection(db, "attendanceSessions"), {
+  createdBy: auth.currentUser.uid,
+  latitude,
+  longitude,
+  radius: 50,
+  active: true,
+  expiry: expiryTime,
+  timestamp: serverTimestamp()
+});
 
   }, () => {
     alert("Enable GPS");
