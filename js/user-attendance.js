@@ -92,6 +92,25 @@ if (Date.now() > data.expiry) {
   alert("Session expired");
   return;
 }
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    alert("App switching detected. Attendance cancelled.");
+    location.reload();
+  }
+});
+let deviceId = localStorage.getItem("deviceId");
+
+if (!deviceId) {
+  deviceId = crypto.randomUUID();
+  localStorage.setItem("deviceId", deviceId);
+}
+await addDoc(collection(db, "attendanceRecords"), {
+  sessionId: data.sessionId,
+  studentId: auth.currentUser.uid,
+  deviceId,
+  timestamp: serverTimestamp()
+});
+where("deviceId", "==", deviceId)
 
       });
 
