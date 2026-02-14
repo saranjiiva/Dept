@@ -1,64 +1,61 @@
-import { auth, db } from "./firebase.js";
+// js/admin-attendance.js
 
-import { 
-  collection, 
-  addDoc, 
-  serverTimestamp 
+import { db, auth } from "./firebase.js";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import QRCode from "https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js";
+let currentSessionId = null;
 
-// Start Attendance
-document.getElementById("startAttendance").addEventListener("click", async () => {
+const startBtn = document.getElementById("startAttendance");
+const qrContainer = document.getElementById("qrContainer");
+const liveTable = document.getElementById("liveTable");
+const status = document.getElementById("status");
 
-  if (!navigator.geolocation) {
-    alert("GPS not supported");
-    return;
-  }
+startBtn.addEventListener("click", async () => {
 
-  navigator.geolocation.getCurrentPosition(async (position) => {
+  currentSessionId = Date.now().toString();
 
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    const sessionRef = await addDoc(collection(db, "attendanceSessions"), {
-      createdBy: auth.currentUser.uid,
-      role: "admin",
-      subject: "Biochemistry",
-      latitude,
-      longitude,
-      radius: 50,
-      active: true,
-      timestamp: serverTimestamp()
-    });
-
-    const sessionId = sessionRef.id;
-
-    const qrData = JSON.stringify({
-      sessionId,
-      latitude,
-      longitude,
-      radius: 50
-    });
-
-    QRCode.toCanvas(document.getElementById("qrContainer"), qrData);
-
-    document.getElementById("status").innerText =
-      "Attendance started. Students scan now.";
-const expiryTime = Date.now() + (2 * 60 * 1000);
-
-await addDoc(collection(db, "attendanceSessions"), {
-  createdBy: auth.currentUser.uid,
-  latitude,
-  longitude,
-  radius: 50,
-  active: true,
-  expiry: expiryTime,
-  timestamp: serverTimestamp()
-});
-
-  }, () => {
-    alert("Enable GPS");
+  await addDoc(collection(db, "attendanceSessions"), {
+    sessionId: currentSessionId,
+    createdAt: serverTimestamp(),
+    createdBy: auth.currentUser.uid,
+    active: true
   });
 
+  qrContainer.innerHTML =
+    `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${currentSessionId}" />`;
+
+  status.innerText = "Attendance Session Started";
+
+  listenLiveAttendance();
 });
+
+function listenLiveAttendance() {
+
+  const q = query(
+    collection(db, "attendanceRecords"),
+    where("sessionId", "==", currentSessionId)
+  );
+
+  onSnapshot(q, (snapshot) => {
+
+    liveTable.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      liveTable.innerHTML += `
+        <tr>
+          <td>${data.studentEmail}</td>
+          <td>${data.timestamp?.toDate()}</td>
+        </tr>
+      `;
+    });
+  });
+}
