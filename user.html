@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Dashboard</title>
+<title>Student Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/userstyle.css">
 </head>
@@ -10,15 +10,17 @@
 
 <!-- ===== Sidebar ===== -->
 <div class="sidebar">
-  <h2 class="logo">My Records</h2>
+  <h2 class="logo">Student Portal</h2>
 
   <ul class="menu">
+
     <li onclick="showSection('dashboard')">Dashboard</li>
 
     <li class="submenu-title">My Attendance</li>
     <ul class="submenu">
       <li onclick="showSection('attendance-monthly')">Monthly</li>
       <li onclick="showSection('attendance-overall')">Overall</li>
+      <li onclick="showSection('attendance-give')">Give Attendance</li>
     </ul>
 
     <li class="submenu-title">My Marks</li>
@@ -30,11 +32,6 @@
       <li onclick="showSection('marks-cat3')">CAT 3</li>
     </ul>
 
-    <li class="submenu-title">Attendance</li>
-    <ul class="submenu">
-      <li onclick="showSection('attendance-give')">Give Attendance</li>
-    </ul>
-
     <li class="logout" onclick="logout()">Logout</li>
   </ul>
 </div>
@@ -42,24 +39,16 @@
 <!-- ===== Main Content ===== -->
 <div class="main">
 
-  <!-- Top Bar -->
   <div class="topbar">
     <h2 id="pageTitle">Dashboard</h2>
   </div>
 
-  <!-- ===== Sections ===== -->
-
-  <!-- Dashboard -->
+  <!-- ===== Dashboard ===== -->
   <div id="dashboard" class="section active">
-    <div class="profile-card">
-      <h3>Student Name</h3>
-      <p>Roll No: 12345</p>
-      <p>Course: MBBS</p>
-      <p>Semester: I</p>
-    </div>
+    <div class="profile-card" id="profileCard"></div>
   </div>
 
-  <!-- Attendance View -->
+  <!-- ===== Attendance ===== -->
   <div id="attendance-monthly" class="section">
     <h3>Monthly Attendance</h3>
     <table id="monthlyAttendanceTable"></table>
@@ -70,7 +59,7 @@
     <table id="overallAttendanceTable"></table>
   </div>
 
-  <!-- Marks -->
+  <!-- ===== Marks ===== -->
   <div id="marks-theory" class="section">
     <h3>Theory Marks</h3>
     <table id="theoryMarksTable"></table>
@@ -100,17 +89,18 @@
   <div id="attendance-give" class="section">
     <h3>Give Attendance</h3>
 
+    <!-- Passkey Method -->
     <div class="attendance-box">
-      <p><strong>Method 1: Passkey</strong></p>
+      <h4>Method 1: Passkey</h4>
       <input type="text" id="passkeyInput" placeholder="Enter attendance passkey">
-      <button onclick="submitPasskey()">Submit</button>
+      <button onclick="submitPasskey()">Submit Attendance</button>
     </div>
 
+    <!-- QR Scanner -->
     <div class="attendance-box">
-      <p><strong>Method 2: QR Code</strong></p>
-      <button onclick="startQR()">Scan QR Code</button>
-      <video id="qrVideo" autoplay playsinline></video>
-      <p id="qrStatus"></p>
+      <h4>Method 2: QR Code</h4>
+      <button onclick="startQR()">Start Camera</button>
+      <div id="reader" style="width:100%; margin-top:15px;"></div>
     </div>
 
     <p id="attendanceStatus"></p>
@@ -118,31 +108,10 @@
 
 </div>
 
+<!-- ===== Scripts ===== -->
 <script src="data/database.js"></script>
-<script src="js/user.js"></script>
-
-<script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('pageTitle').innerText =
-    document.querySelector(`#${id} h3`)?.innerText || "Dashboard";
-}
-
-function logout() {
-  alert("Logged out!");
-}
-
-/* ===== Attendance Logic (Frontend only placeholders) ===== */
-<button id="scanBtn">Scan QR</button>
-<video id="preview"></video>
-<p id="result"></p>
-
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script type="module" src="js/user-attendance.js"></script>
-
-}
-</script>
+<script src="js/user.js"></script>
 
 </body>
 </html>
