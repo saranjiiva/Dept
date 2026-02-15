@@ -2,119 +2,284 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Viewer Dashboard</title>
+<title>Faculty Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="css/viewersstyle.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
+
 <body>
 
-<!-- ===== Sidebar ===== -->
+<!-- =====================================================
+   SIDEBAR
+===================================================== -->
 <div class="sidebar">
   <h2 class="logo">Faculty Panel</h2>
 
   <ul class="menu">
-    <li onclick="showSection('dashboard')">Dashboard</li>
 
+    <li data-section="dashboard">Dashboard</li>
+
+    <!-- Attendance -->
     <li class="submenu-title">Attendance</li>
     <ul class="submenu">
-      <li onclick="showSection('attendance-monthly')">Monthly Attendance</li>
-      <li onclick="showSection('attendance-overall')">Overall Attendance</li>
-      <li onclick="showSection('attendance-taking')">Attendance Taking</li>
+      <li data-section="attendance-main">View Attendance</li>
+      <li data-section="attendance-taking">Take Attendance</li>
     </ul>
 
+    <!-- Marks -->
     <li class="submenu-title">Marks</li>
     <ul class="submenu">
-      <li onclick="showSection('marks-theory')">Theory</li>
-      <li onclick="showSection('marks-practical')">Practical</li>
-      <li onclick="showSection('marks-cat1')">CAT 1</li>
-      <li onclick="showSection('marks-cat2')">CAT 2</li>
-      <li onclick="showSection('marks-cat3')">CAT 3</li>
+      <li data-section="marks-main">View Marks</li>
     </ul>
 
-    <li class="logout" onclick="logout()">Logout</li>
+    <li class="logout">Logout</li>
+
   </ul>
 </div>
 
-<!-- ===== Main Content ===== -->
+
+<!-- =====================================================
+   MAIN CONTENT
+===================================================== -->
 <div class="main">
 
-  <!-- Top Bar -->
+  <!-- Topbar -->
   <div class="topbar">
     <h2 id="pageTitle">Dashboard</h2>
   </div>
 
-  <!-- Dashboard -->
+  <!-- =====================================================
+      DASHBOARD
+  ===================================================== -->
   <div id="dashboard" class="section active">
     <h3>Welcome Faculty</h3>
-    <p>Select Attendance Taking to start session.</p>
+    <p>
+      You can view student attendance and marks.
+      You can also conduct attendance sessions.
+      Editing and uploading permissions are restricted.
+    </p>
   </div>
 
-  <!-- Attendance View -->
-  <div id="attendance-monthly" class="section">
-    <h3>Monthly Attendance</h3>
-    <table id="monthlyAttendanceTable"></table>
+
+  <!-- =====================================================
+      ATTENDANCE VIEW (READ ONLY)
+  ===================================================== -->
+  <div id="attendance-main" class="section">
+
+    <h3>Attendance Records (250 Students)</h3>
+
+    <div class="filter-bar">
+      <label>View Type:</label>
+      <select id="attendanceType">
+        <option value="monthly">Monthly</option>
+        <option value="overall">Overall</option>
+      </select>
+
+      <label>Month:</label>
+      <select id="attendanceMonth">
+        <option>January</option>
+        <option>February</option>
+        <option>March</option>
+        <option>April</option>
+        <option>May</option>
+        <option>June</option>
+        <option>July</option>
+        <option>August</option>
+        <option>September</option>
+        <option>October</option>
+        <option>November</option>
+        <option>December</option>
+      </select>
+
+      <button id="loadAttendanceBtn">Load Attendance</button>
+    </div>
+
+    <div class="table-container">
+      <table id="attendanceTable"></table>
+    </div>
+
   </div>
 
-  <div id="attendance-overall" class="section">
-    <h3>Overall Attendance</h3>
-    <table id="overallAttendanceTable"></table>
-  </div>
 
-  <!-- ===== Attendance Taking ===== -->
+  <!-- =====================================================
+      ATTENDANCE TAKING (ALLOWED)
+  ===================================================== -->
   <div id="attendance-taking" class="section">
-    <h3>Attendance Taking</h3>
+
+    <h3>Conduct Attendance Session</h3>
 
     <div class="attendance-box">
 
-      <label>Class / Subject</label>
+      <label>Subject / Class</label>
       <input id="subject" placeholder="Eg: Biochemistry Practical">
 
-      <label>Validity Time (minutes)</label>
+      <label>Validity (minutes)</label>
       <input id="minutes" type="number" value="2">
 
-      <label>Passkey (optional)</label>
-      <input id="passkey" placeholder="Eg: BIO123">
+      <label>Passkey (Optional)</label>
+      <input id="passkey" placeholder="Eg: BIO202">
 
-      <button onclick="startAttendance()">Start Attendance</button>
+      <button id="startAttendanceBtn">Start Attendance</button>
 
-      <div id="timer" style="margin-top:10px;font-weight:bold;"></div>
-      <div id="qr" style="margin-top:15px;"></div>
-
-      <p id="locationStatus" style="margin-top:10px;color:#64748b;"></p>
+      <div id="timer"></div>
+      <div id="qr"></div>
+      <p id="locationStatus"></p>
 
     </div>
+
   </div>
 
-  <!-- Marks -->
-  <div id="marks-theory" class="section"><h3>Theory Marks</h3></div>
-  <div id="marks-practical" class="section"><h3>Practical Marks</h3></div>
-  <div id="marks-cat1" class="section"><h3>CAT 1 Marks</h3></div>
-  <div id="marks-cat2" class="section"><h3>CAT 2 Marks</h3></div>
-  <div id="marks-cat3" class="section"><h3>CAT 3 Marks</h3></div>
+
+  <!-- =====================================================
+      MARKS VIEW (READ ONLY)
+  ===================================================== -->
+  <div id="marks-main" class="section">
+
+    <h3>Marks Records (250 Students)</h3>
+
+    <div class="filter-bar">
+
+      <label>Category:</label>
+      <select id="marksCategory">
+        <option value="theory">Theory</option>
+        <option value="practical">Practical</option>
+        <option value="cat1">CAT 1</option>
+        <option value="cat2">CAT 2</option>
+        <option value="cat3">CAT 3</option>
+        <option value="model">Model</option>
+        <option value="university">University</option>
+      </select>
+
+      <button id="loadMarksBtn">Load Marks</button>
+
+    </div>
+
+    <div class="table-container">
+      <table id="marksTable"></table>
+    </div>
+
+  </div>
 
 </div>
 
-<script src="data/database.js"></script>
+
+
+<!-- =====================================================
+   SCRIPTS
+===================================================== -->
+<script type="module" src="data/database.js"></script>
 
 <script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('pageTitle').innerText =
-    document.querySelector(`#${id} h3`).innerText;
+
+/* ================= SIDEBAR NAVIGATION ================= */
+
+const menuItems = document.querySelectorAll(".menu li[data-section]");
+const sections = document.querySelectorAll(".section");
+const pageTitle = document.getElementById("pageTitle");
+
+menuItems.forEach(item => {
+  item.addEventListener("click", () => {
+
+    const target = item.dataset.section;
+
+    sections.forEach(sec => sec.classList.remove("active"));
+    menuItems.forEach(m => m.classList.remove("active"));
+
+    document.getElementById(target).classList.add("active");
+    item.classList.add("active");
+
+    pageTitle.innerText =
+      document.querySelector(`#${target} h3`).innerText;
+  });
+});
+
+
+/* ================= READ ONLY ATTENDANCE ================= */
+
+document.getElementById("loadAttendanceBtn")
+.addEventListener("click", () => {
+
+  const type = document.getElementById("attendanceType").value;
+  const month = document.getElementById("attendanceMonth").value;
+
+  const table = document.getElementById("attendanceTable");
+
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>${type === "monthly" ? month : "Overall %"}</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${generateAttendanceRows(250, type)}
+    </tbody>
+  `;
+
+});
+
+function generateAttendanceRows(count, type) {
+  let rows = "";
+  for (let i = 1; i <= count; i++) {
+    rows += `
+      <tr>
+        <td>${i}</td>
+        <td>Student ${i}</td>
+        <td>${type === "monthly" ? "20/26" : "82%"}</td>
+      </tr>
+    `;
+  }
+  return rows;
 }
 
-function logout() {
-  alert("Logged out!");
+
+/* ================= READ ONLY MARKS ================= */
+
+document.getElementById("loadMarksBtn")
+.addEventListener("click", () => {
+
+  const category = document.getElementById("marksCategory").value;
+  const table = document.getElementById("marksTable");
+
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>${category.toUpperCase()}</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${generateMarksRows(250)}
+    </tbody>
+  `;
+
+});
+
+function generateMarksRows(count) {
+  let rows = "";
+  for (let i = 1; i <= count; i++) {
+    rows += `
+      <tr>
+        <td>${i}</td>
+        <td>Student ${i}</td>
+        <td>${Math.floor(Math.random() * 100)}</td>
+      </tr>
+    `;
+  }
+  return rows;
 }
 
-/* ===================== ATTENDANCE SYSTEM ===================== */
 
-let sessionData = {};
+/* ================= ATTENDANCE TAKING ================= */
+
 let timerInterval = null;
 
-function startAttendance() {
+document.getElementById("startAttendanceBtn")
+.addEventListener("click", () => {
+
   const subject = document.getElementById("subject").value.trim();
   const minutes = document.getElementById("minutes").value;
   const passkey = document.getElementById("passkey").value.trim();
@@ -125,10 +290,11 @@ function startAttendance() {
   }
 
   navigator.geolocation.getCurrentPosition(pos => {
+
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
 
-    sessionData = {
+    const sessionData = {
       subject,
       passkey,
       lat,
@@ -147,7 +313,9 @@ function startAttendance() {
   }, () => {
     alert("Location permission required");
   });
-}
+
+});
+
 
 function generateQR(data) {
   document.getElementById("qr").innerHTML = "";
@@ -161,7 +329,9 @@ function generateQR(data) {
 function startTimer(expiry) {
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
+
     const remaining = expiry - Date.now();
+
     if (remaining <= 0) {
       clearInterval(timerInterval);
       document.getElementById("timer").innerText = "Session expired";
@@ -172,8 +342,19 @@ function startTimer(expiry) {
       document.getElementById("timer").innerText =
         `Expires in ${min}:${sec.toString().padStart(2,'0')}`;
     }
+
   }, 1000);
 }
+
+
+/* ================= LOGOUT ================= */
+
+document.querySelector(".logout")
+.addEventListener("click", () => {
+  alert("Logged out");
+  window.location.href = "index.html";
+});
+
 </script>
 
 </body>
