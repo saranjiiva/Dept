@@ -33,14 +33,6 @@ loginForm.addEventListener("submit", async (e) => {
     const result = await signInWithEmailAndPassword(auth, email, password);
     const userAuth = result.user;
 
-    // Optional: Check Email Verification
-    if (!userAuth.emailVerified) {
-      loginStatus.style.color = "#f87171";
-      loginStatus.textContent = "Please verify your email before logging in.";
-      loginBtn.textContent = "Login";
-      loginBtn.disabled = false;
-      return;
-    }
 
     const uid = userAuth.uid;
 
