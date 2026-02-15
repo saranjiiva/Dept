@@ -1,54 +1,136 @@
-/* Attendance Controls */
+/* ============================= */
+/* ===== Attendance Module ===== */
+/* ============================= */
+
 .attendance-controls {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .attendance-controls input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
 }
 
+.attendance-controls input:focus {
+  border-color: #2563eb;
+}
+
+/* ===== Buttons ===== */
+
 .primary-btn {
-  background: #0ea5e9;
-  color: white;
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 4px;
   border: none;
-  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #1e40af;
+  color: #ffffff;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .primary-btn:hover {
-  background: #0284c7;
+  background: #1e3a8a;
 }
 
 .secondary-btn {
-  background: #16a34a;
-  color: white;
-  padding: 8px 14px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 4px;
   border: none;
-  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #065f46;
+  color: #ffffff;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .secondary-btn:hover {
-  background: #15803d;
+  background: #064e3b;
 }
 
-/* QR Box */
+/* ===== QR + Passkey Section ===== */
+
 .qr-box {
   display: flex;
-  gap: 30px;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 25px;
 }
 
+#qrContainer img {
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+/* ===== Passkey Card ===== */
+
 .passkey-box {
-  background: #f1f5f9;
-  padding: 15px;
-  border-radius: 10px;
+  min-width: 200px;
   text-align: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.passkey-box p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.passkey-box h2 {
+  margin: 10px 0 0;
+  font-size: 28px;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* ===== Status Text ===== */
+
+#status {
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* ===== Live Attendance Table ===== */
+
+#liveTable td {
+  font-size: 14px;
+}
+
+.section table {
+  margin-top: 15px;
+  border: 1px solid #e2e8f0;
+}
+
+.section table th {
+  background: #1e40af;
+  font-weight: 500;
 }
