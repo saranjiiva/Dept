@@ -1,37 +1,40 @@
-/* ===============================
+/* =====================================================
    GLOBAL RESET
-=================================*/
+===================================================== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Segoe UI", "Inter", Arial, sans-serif;
 }
 
 body {
   display: flex;
   min-height: 100vh;
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+  color: #1e293b;
 }
 
-/* ===============================
+/* =====================================================
    SIDEBAR
-=================================*/
+===================================================== */
 .sidebar {
-  width: 260px;
-  background: #020617;
-  color: #ffffff;
-  padding: 20px 0;
+  width: 270px;
+  background: linear-gradient(180deg, #020617, #0f172a);
+  color: #fff;
+  padding: 25px 0;
   position: fixed;
   height: 100vh;
   overflow-y: auto;
+  transition: 0.3s ease;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
 }
 
 .logo {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 600;
   letter-spacing: 1px;
   color: #38bdf8;
 }
@@ -41,33 +44,33 @@ body {
 }
 
 .menu li {
-  padding: 12px 25px;
+  padding: 13px 28px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
   font-size: 15px;
+  border-left: 3px solid transparent;
 }
 
 .menu li:hover {
-  background: #0f172a;
-  padding-left: 30px;
+  background: rgba(56,189,248,0.08);
+  border-left: 3px solid #38bdf8;
+  padding-left: 34px;
 }
 
-/* Submenu Title */
 .submenu-title {
-  font-weight: bold;
-  color: #94a3b8;
-  margin-top: 15px;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
+  color: #94a3b8;
+  padding: 15px 28px 5px;
 }
 
-/* Submenu */
 .submenu {
   list-style: none;
 }
 
 .submenu li {
-  padding: 10px 40px;
+  padding: 10px 45px;
   font-size: 14px;
   color: #cbd5e1;
 }
@@ -75,13 +78,13 @@ body {
 .submenu li:hover {
   background: #1e293b;
   color: #38bdf8;
+  padding-left: 50px;
 }
 
-/* Logout */
 .logout {
-  margin-top: 20px;
+  margin-top: 25px;
   color: #f87171;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .logout:hover {
@@ -89,41 +92,45 @@ body {
   color: white;
 }
 
-/* ===============================
+/* =====================================================
    MAIN CONTENT
-=================================*/
+===================================================== */
 .main {
-  margin-left: 260px;
-  padding: 25px;
+  margin-left: 270px;
+  padding: 30px;
   flex: 1;
-  width: calc(100% - 260px);
+  width: calc(100% - 270px);
 }
 
-/* ===============================
-   TOP BAR
-=================================*/
+/* =====================================================
+   TOPBAR
+===================================================== */
 .topbar {
-  background: white;
-  padding: 15px 20px;
-  border-radius: 10px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  padding: 18px 25px;
+  border-radius: 14px;
   margin-bottom: 25px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .topbar h2 {
   font-size: 20px;
-  color: #1e293b;
+  font-weight: 600;
 }
 
-/* ===============================
-   SECTIONS
-=================================*/
+/* =====================================================
+   SECTION CONTAINER
+===================================================== */
 .section {
   display: none;
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.06);
   animation: fadeIn 0.3s ease;
 }
 
@@ -132,81 +139,190 @@ body {
 }
 
 .section h3 {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-weight: 600;
   color: #0f172a;
 }
 
-/* ===============================
-   TABLE STYLING
-=================================*/
+/* =====================================================
+   FILTER BAR (Dropdown Area)
+===================================================== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.filter-bar label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filter-bar select {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.filter-bar select:focus {
+  border-color: #38bdf8;
+  outline: none;
+}
+
+/* =====================================================
+   TABLE STYLING (250 STUDENTS SUPPORT)
+===================================================== */
+.table-container {
+  max-height: 450px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+}
+
+table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 table th {
-  background: #0ea5e9;
+  background: linear-gradient(90deg, #0ea5e9, #0284c7);
   color: white;
-  padding: 10px;
+  padding: 12px;
   text-align: left;
   font-size: 14px;
 }
 
 table td {
-  padding: 10px;
+  padding: 10px 12px;
   border-bottom: 1px solid #e2e8f0;
   font-size: 14px;
 }
 
-table tr:hover {
-  background: #f1f5f9;
+table tr:nth-child(even) {
+  background: #f8fafc;
 }
 
-/* ===============================
-   BUTTONS
-=================================*/
+table tr:hover {
+  background: #e0f2fe;
+  transition: 0.2s ease;
+}
+
+/* =====================================================
+   BUTTON SYSTEM
+===================================================== */
 button {
-  background: #0ea5e9;
-  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: 0.3s ease;
-  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Primary */
+button {
+  background: linear-gradient(90deg, #0ea5e9, #0284c7);
+  color: white;
 }
 
 button:hover {
-  background: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(14,165,233,0.4);
 }
 
-/* Export Button */
-#exportBtn {
-  margin-top: 20px;
+/* Success */
+button.success {
+  background: #16a34a;
 }
 
-/* ===============================
-   QR CONTAINER
-=================================*/
-#qrContainer {
+button.success:hover {
+  box-shadow: 0 6px 15px rgba(22,163,74,0.4);
+}
+
+/* Danger */
+button.danger {
+  background: #dc2626;
+}
+
+button.danger:hover {
+  box-shadow: 0 6px 15px rgba(220,38,38,0.4);
+}
+
+/* Secondary */
+button.secondary {
+  background: #64748b;
+}
+
+button.secondary:hover {
+  box-shadow: 0 6px 15px rgba(100,116,139,0.4);
+}
+
+/* =====================================================
+   ATTENDANCE TAKING PANEL
+===================================================== */
+.attendance-control-panel {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.qr-box, .passkey-box {
+  flex: 1;
+  min-width: 250px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
+}
+
+.qr-box h4,
+.passkey-box h4 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+#passkeyDisplay {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #0ea5e9;
+}
+
+.attendance-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+#attendanceStatus {
   margin-top: 15px;
-}
-
-#status {
-  margin-top: 10px;
   font-weight: 500;
   color: #16a34a;
 }
 
-/* ===============================
+/* =====================================================
    ANIMATION
-=================================*/
+===================================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -214,27 +330,24 @@ button:hover {
   }
 }
 
-/* ===============================
-   RESPONSIVE
-=================================*/
-@media (max-width: 900px) {
-
+/* =====================================================
+   RESPONSIVE DESIGN
+===================================================== */
+@media (max-width: 1024px) {
   .sidebar {
-    width: 200px;
+    width: 220px;
   }
 
   .main {
-    margin-left: 200px;
-    width: calc(100% - 200px);
+    margin-left: 220px;
+    width: calc(100% - 220px);
   }
 }
 
-@media (max-width: 700px) {
-
+@media (max-width: 768px) {
   .sidebar {
     position: absolute;
-    left: -260px;
-    transition: 0.3s ease;
+    left: -270px;
   }
 
   .sidebar.active {
@@ -244,5 +357,15 @@ button:hover {
   .main {
     margin-left: 0;
     width: 100%;
+    padding: 20px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .attendance-control-panel {
+    flex-direction: column;
   }
 }
