@@ -1,201 +1,617 @@
-body {
+/* =====================================
+   GLOBAL RESET
+===================================== */
+* {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f1f5f9;
-  display: flex;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ===== Sidebar ===== */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f1f5f9;
+  display: flex;
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+/* =====================================
+   SIDEBAR
+===================================== */
 .sidebar {
   width: 260px;
   background: #020617;
   color: white;
   min-height: 100vh;
-  padding: 20px 15px;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 22px;
+  margin-bottom: 25px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
 }
 
+/* Menu */
 .menu {
   list-style: none;
   padding: 0;
 }
 
 .menu li {
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: pointer;
-  border-radius: 6px;
-  margin-bottom: 4px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: 0.2s ease;
+  font-size: 14px;
 }
 
 .menu li:hover {
   background: #0ea5e9;
+  color: white;
+  transform: translateX(4px);
 }
 
+/* Section Headings */
 .submenu-title {
-  margin-top: 15px;
-  font-size: 13px;
+  margin-top: 18px;
+  font-size: 12px;
   color: #94a3b8;
   text-transform: uppercase;
-  cursor: default;
+  letter-spacing: 1px;
 }
 
+/* Submenu */
 .submenu {
   list-style: none;
-  padding-left: 10px;
+  padding-left: 12px;
+  margin-top: 6px;
 }
 
 .submenu li {
-  font-size: 14px;
-  background: #020617;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
 }
 
+.submenu li:hover {
+  background: #0ea5e9;
+}
+
+/* Logout */
 .logout {
-  margin-top: 20px;
+  margin-top: auto;
   background: #dc2626;
   text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
-/* ===== Main Content ===== */
+.logout:hover {
+  background: #ef4444;
+}
+
+/* =====================================
+   MAIN CONTENT
+===================================== */
 .main {
   flex: 1;
-  padding: 20px;
+  padding: 25px;
 }
 
-/* ===== Top Bar ===== */
+/* Top Bar */
 .topbar {
   background: white;
-  padding: 15px 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
-/* ===== Sections ===== */
+.topbar h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* =====================================
+   SECTIONS
+===================================== */
 .section {
   display: none;
   background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  animation: fadeIn 0.3s ease;
 }
 
 .section.active {
   display: block;
 }
 
-/* ===== Profile Card ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================
+   PROFILE CARD
+===================================== */
 .profile-card {
   background: #f8fafc;
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 400px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  padding: 22px;
+  border-radius: 14px;
+  max-width: 420px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  border-left: 5px solid #0ea5e9;
 }
 
 .profile-card h3 {
-  margin-top: 0;
+  margin-bottom: 12px;
   color: #0f172a;
+  font-size: 18px;
 }
 
-/* ===== Tables ===== */
+.profile-card p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #475569;
+}
+
+/* =====================================
+   TABLES
+===================================== */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 15px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 table th, table td {
-  padding: 10px;
-  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
   text-align: center;
+  font-size: 14px;
 }
 
 table th {
   background: #0ea5e9;
   color: white;
+  font-weight: 600;
 }
 
-/* ===== Attendance Box ===== */
+table tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+table tr:hover {
+  background: #e0f2fe;
+}
+
+/* =====================================
+   ATTENDANCE BOX
+===================================== */
 .attendance-box {
   background: #f8fafc;
-  padding: 18px;
-  border-radius: 12px;
-  max-width: 420px;
-  margin-bottom: 20px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  padding: 22px;
+  border-radius: 14px;
+  max-width: 450px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  border-left: 4px solid #22c55e;
+}
+
+.attendance-box h4 {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #0f172a;
 }
 
 .attendance-box input {
   width: 100%;
-  padding: 9px;
-  margin: 8px 0 12px;
-  border-radius: 6px;
-  border: 1px solid #cbd5f5;
-  font-size: 13px;
+  padding: 10px;
+  margin: 6px 0 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  transition: 0.2s ease;
 }
 
 .attendance-box input:focus {
   outline: none;
   border-color: #0ea5e9;
-  box-shadow: 0 0 0 2px rgba(14,165,233,0.2);
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
 }
 
+/* Button */
 .attendance-box button {
-  padding: 10px 16px;
+  padding: 12px 18px;
   border: none;
-  border-radius: 20px;
+  border-radius: 30px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
   color: #020617;
   background: linear-gradient(90deg, #0ea5e9, #22c55e);
   box-shadow:
-    0 8px 18px rgba(34,197,94,0.35),
+    0 10px 20px rgba(34,197,94,0.35),
     inset 0 0 0 1px rgba(255,255,255,0.25);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .attendance-box button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
-  box-shadow:
-    0 12px 28px rgba(34,197,94,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.35);
 }
 
 .attendance-box button:active {
   transform: translateY(0);
-  box-shadow:
-    0 6px 14px rgba(34,197,94,0.3),
-    inset 0 0 0 1px rgba(255,255,255,0.15);
 }
 
-/* ===== QR Video ===== */
-#qrVideo {
-  width: 100%;
-  max-width: 350px;
-  border-radius: 10px;
-  margin-top: 10px;
-  display: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* =====================================
+   QR READER
+===================================== */
+#reader {
+  margin-top: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
 
-/* ===== Status Messages ===== */
+/* =====================================
+   STATUS MESSAGES
+===================================== */
 #attendanceStatus {
-  font-weight: bold;
-  margin-top: 10px;
+  font-weight: 600;
+  margin-top: 15px;
+  font-size: 14px;
 }
 
-#qrStatus {
+/* =====================================
+   RESPONSIVE DESIGN
+===================================== */
+@media (max-width: 900px) {
+
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .main {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  .profile-card {
+    max-width: 100%;
+  }
+
+  .attendance-box {
+    max-width: 100%;
+  }
+}/* =====================================
+   GLOBAL RESET
+===================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f1f5f9;
+  display: flex;
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+/* =====================================
+   SIDEBAR
+===================================== */
+.sidebar {
+  width: 260px;
+  background: #020617;
+  color: white;
+  min-height: 100vh;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
+}
+
+/* Menu */
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  padding: 12px 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: 0.2s ease;
+  font-size: 14px;
+}
+
+.menu li:hover {
+  background: #0ea5e9;
+  color: white;
+  transform: translateX(4px);
+}
+
+/* Section Headings */
+.submenu-title {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Submenu */
+.submenu {
+  list-style: none;
+  padding-left: 12px;
+  margin-top: 6px;
+}
+
+.submenu li {
   font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.submenu li:hover {
+  background: #0ea5e9;
+}
+
+/* Logout */
+.logout {
+  margin-top: auto;
+  background: #dc2626;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.logout:hover {
+  background: #ef4444;
+}
+
+/* =====================================
+   MAIN CONTENT
+===================================== */
+.main {
+  flex: 1;
+  padding: 25px;
+}
+
+/* Top Bar */
+.topbar {
+  background: white;
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.topbar h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* =====================================
+   SECTIONS
+===================================== */
+.section {
+  display: none;
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  animation: fadeIn 0.3s ease;
+}
+
+.section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================
+   PROFILE CARD
+===================================== */
+.profile-card {
+  background: #f8fafc;
+  padding: 22px;
+  border-radius: 14px;
+  max-width: 420px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  border-left: 5px solid #0ea5e9;
+}
+
+.profile-card h3 {
+  margin-bottom: 12px;
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.profile-card p {
+  margin-bottom: 8px;
+  font-size: 14px;
   color: #475569;
+}
+
+/* =====================================
+   TABLES
+===================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+table th, table td {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  font-size: 14px;
+}
+
+table th {
+  background: #0ea5e9;
+  color: white;
+  font-weight: 600;
+}
+
+table tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+table tr:hover {
+  background: #e0f2fe;
+}
+
+/* =====================================
+   ATTENDANCE BOX
+===================================== */
+.attendance-box {
+  background: #f8fafc;
+  padding: 22px;
+  border-radius: 14px;
+  max-width: 450px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  border-left: 4px solid #22c55e;
+}
+
+.attendance-box h4 {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.attendance-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.attendance-box input:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
+}
+
+/* Button */
+.attendance-box button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #020617;
+  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+  box-shadow:
+    0 10px 20px rgba(34,197,94,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.25);
+  transition: all 0.2s ease;
+}
+
+.attendance-box button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.attendance-box button:active {
+  transform: translateY(0);
+}
+
+/* =====================================
+   QR READER
+===================================== */
+#reader {
+  margin-top: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* =====================================
+   STATUS MESSAGES
+===================================== */
+#attendanceStatus {
+  font-weight: 600;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* =====================================
+   RESPONSIVE DESIGN
+===================================== */
+@media (max-width: 900px) {
+
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .main {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  .profile-card {
+    max-width: 100%;
+  }
+
+  .attendance-box {
+    max-width: 100%;
+  }
 }
