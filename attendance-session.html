@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Attendance Session</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 400px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.start {
+  background: #16a34a;
+  color: white;
+}
+
+.stop {
+  background: #dc2626;
+  color: white;
+}
+
+#qrContainer {
+  margin-top: 20px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Live Attendance Session</h2>
+
+  <p>Status: <span id="attendanceStatus">Not Started</span></p>
+  <p>Passkey: <span id="passkeyDisplay">----</span></p>
+
+  <button id="startAttendance" class="start">Start</button>
+  <button id="stopAttendance" class="stop">Stop</button>
+
+  <div id="qrContainer"></div>
+</div>
+
+<script>
+const startBtn = document.getElementById("startAttendance");
+const stopBtn = document.getElementById("stopAttendance");
+const passkeyDisplay = document.getElementById("passkeyDisplay");
+const statusDisplay = document.getElementById("attendanceStatus");
+const qrContainer = document.getElementById("qrContainer");
+
+let sessionActive = false;
+
+function generatePasskey() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+startBtn.addEventListener("click", () => {
+
+  if (sessionActive) return;
+
+  sessionActive = true;
+
+  const passkey = generatePasskey();
+  passkeyDisplay.innerText = passkey;
+  statusDisplay.innerText = "Session Started";
+
+  qrContainer.innerHTML = "";
+
+  new QRCode(qrContainer, {
+    text: passkey,
+    width: 200,
+    height: 200
+  });
+
+});
+
+stopBtn.addEventListener("click", () => {
+
+  sessionActive = false;
+  statusDisplay.innerText = "Session Stopped";
+  passkeyDisplay.innerText = "----";
+  qrContainer.innerHTML = "";
+
+});
+</script>
+
+</body>
+</html>
