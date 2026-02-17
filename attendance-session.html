@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Live Attendance Session</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
 body {
   font-family: Arial, sans-serif;
-  background: #f8fafc;
+  background: #f1f5f9;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,9 +21,9 @@ body {
   background: white;
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   text-align: center;
-  width: 400px;
+  width: 420px;
 }
 
 button {
@@ -33,22 +35,12 @@ button {
   font-weight: bold;
 }
 
-.start {
-  background: #16a34a;
-  color: white;
-}
+.start { background: #16a34a; color: white; }
+.stop { background: #dc2626; color: white; }
 
-.stop {
-  background: #dc2626;
-  color: white;
-}
-
-#qrContainer {
-  margin-top: 20px;
-}
+#qrContainer { margin-top: 20px; }
+.timer { font-weight: bold; color: #dc2626; }
 </style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -56,56 +48,109 @@ button {
 <div class="container">
   <h2>Live Attendance Session</h2>
 
-  <p>Status: <span id="attendanceStatus">Not Started</span></p>
-  <p>Passkey: <span id="passkeyDisplay">----</span></p>
+  <p>Status: <span id="status">Not Started</span></p>
+  <p>Passkey: <span id="passkey">----</span></p>
+  <p>Expires in: <span id="timer" class="timer">--</span></p>
 
-  <button id="startAttendance" class="start">Start</button>
-  <button id="stopAttendance" class="stop">Stop</button>
+  <button id="startBtn" class="start">Start Session</button>
+  <button id="stopBtn" class="stop">Stop Session</button>
 
   <div id="qrContainer"></div>
 </div>
 
-<script>
-const startBtn = document.getElementById("startAttendance");
-const stopBtn = document.getElementById("stopAttendance");
-const passkeyDisplay = document.getElementById("passkeyDisplay");
-const statusDisplay = document.getElementById("attendanceStatus");
+<script type="module">
+
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const passkeyDisplay = document.getElementById("passkey");
+const statusDisplay = document.getElementById("status");
 const qrContainer = document.getElementById("qrContainer");
+const timerDisplay = document.getElementById("timer");
 
-let sessionActive = false;
+let countdownInterval = null;
+let currentSessionId = null;
 
+// 🔐 Verify Admin
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  }
+});
+
+// 🔑 Generate Passkey
 function generatePasskey() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-startBtn.addEventListener("click", () => {
+// ⏱ Countdown Timer
+function startTimer(duration) {
+  let time = duration;
 
-  if (sessionActive) return;
+  countdownInterval = setInterval(() => {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
 
-  sessionActive = true;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    time--;
+
+    if (time < 0) {
+      clearInterval(countdownInterval);
+      stopSession();
+    }
+
+  }, 1000);
+}
+
+// ▶ START SESSION
+startBtn.addEventListener("click", async () => {
 
   const passkey = generatePasskey();
-  passkeyDisplay.innerText = passkey;
-  statusDisplay.innerText = "Session Started";
+  currentSessionId = passkey;
 
+  passkeyDisplay.innerText = passkey;
+  statusDisplay.innerText = "Session Active";
   qrContainer.innerHTML = "";
 
+  // Save session in Firestore
+  await setDoc(doc(db, "attendanceSessions", passkey), {
+    passkey: passkey,
+    createdAt: serverTimestamp(),
+    active: true
+  });
+
+  // Generate QR
   new QRCode(qrContainer, {
     text: passkey,
     width: 200,
     height: 200
   });
 
+  // Start 2 min timer
+  startTimer(120);
 });
 
-stopBtn.addEventListener("click", () => {
+// ⛔ STOP SESSION
+async function stopSession() {
 
-  sessionActive = false;
-  statusDisplay.innerText = "Session Stopped";
+  if (!currentSessionId) return;
+
+  await deleteDoc(doc(db, "attendanceSessions", currentSessionId));
+
+  statusDisplay.innerText = "Session Ended";
   passkeyDisplay.innerText = "----";
   qrContainer.innerHTML = "";
+  timerDisplay.innerText = "--";
 
-});
+  clearInterval(countdownInterval);
+  currentSessionId = null;
+}
+
+stopBtn.addEventListener("click", stopSession);
+
 </script>
 
 </body>
