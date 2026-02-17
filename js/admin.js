@@ -212,48 +212,12 @@ function generateMarksRows(count) {
 // 📷 ATTENDANCE TAKING CONTROLLER
 // =====================================================
 
-const startAttendanceBtn = document.getElementById("startAttendance");
-const stopAttendanceBtn = document.getElementById("stopAttendance");
-const passkeyDisplay = document.getElementById("passkeyDisplay");
-const attendanceStatus = document.getElementById("attendanceStatus");
-
-let attendanceSessionActive = false;
-
 if (startAttendanceBtn) {
-
   startAttendanceBtn.addEventListener("click", () => {
-
-    if (attendanceSessionActive) return;
-
-    attendanceSessionActive = true;
-
-    const passkey = generatePasskey();
-    passkeyDisplay.innerText = passkey;
-
-    attendanceStatus.innerText = "Attendance session started.";
-
-    // 🔹 Replace with QR generation logic
-    console.log("Start Attendance with passkey:", passkey);
-
+    window.location.href = "attendance-session.html";
   });
-
 }
 
-if (stopAttendanceBtn) {
-
-  stopAttendanceBtn.addEventListener("click", () => {
-
-    attendanceSessionActive = false;
-    attendanceStatus.innerText = "Attendance session stopped.";
-    passkeyDisplay.innerText = "----";
-
-  });
-
-}
-
-function generatePasskey() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
 
 
 // =====================================================
