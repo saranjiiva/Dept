@@ -1,4 +1,5 @@
-import { auth, db } from "./firebase.js";
+<script src="admin.js"></script>
+
 
 import {
   onAuthStateChanged,
