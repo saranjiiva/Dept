@@ -209,8 +209,10 @@ function generateMarksRows(count) {
 
 
 // =====================================================
-// 📷 ATTENDANCE TAKING CONTROLLER
+// 📷 ATTENDANCE TAKING CONTROLLER (REDIRECT)
 // =====================================================
+
+const startAttendanceBtn = document.getElementById("startAttendance");
 
 if (startAttendanceBtn) {
   startAttendanceBtn.addEventListener("click", () => {
