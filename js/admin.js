@@ -1,4 +1,5 @@
-<script src="admin.js"></script>
+import { auth, db } from "./firebase.js";
+
 
 
 import {
