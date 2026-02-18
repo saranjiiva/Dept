@@ -1,138 +1,187 @@
-import { auth, db } from "./firebase.js";
+import { 
+  db, doc, getDoc, setDoc, collection, getDocs, 
+  serverTimestamp 
+} from "../data/database.js";
 
-import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+let currentStudent = null;
 
-import {
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+/* ============================= */
+/* LOGIN USING ROLL NUMBER */
+/* ============================= */
 
-/* =========================================================
-   LOGIN FUNCTION
-========================================================= */
+window.addEventListener("DOMContentLoaded", async () => {
+  const rollNo = localStorage.getItem("studentRoll");
 
-const loginForm = document.getElementById("loginForm");
-const loginStatus = document.getElementById("loginStatus");
-const loginBtn = document.querySelector(".login-btn");
-
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  loginStatus.textContent = "";
-  loginBtn.textContent = "Signing in...";
-  loginBtn.disabled = true;
-
-  try {
-    // Firebase Authentication
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    const userAuth = result.user;
-
-
-    const uid = userAuth.uid;
-
-    // Fetch role from Firestore
-    const snap = await getDoc(doc(db, "users", uid));
-
-    if (!snap.exists()) {
-      loginStatus.style.color = "#f87171";
-      loginStatus.textContent = "User role not assigned. Contact admin.";
-      loginBtn.textContent = "Login";
-      loginBtn.disabled = false;
-      return;
-    }
-
-    const userData = snap.data();
-    const role = userData.role;
-
-    // Role-based redirect
-    if (role === "admin") {
-      window.location.href = "admin.html";
-    } 
-    else if (role === "viewer") {
-      window.location.href = "viewers.html";
-    } 
-    else if (role === "student") {
-      window.location.href = "user.html";
-    } 
-    else {
-      loginStatus.style.color = "#f87171";
-      loginStatus.textContent = "Invalid role assigned.";
-      loginBtn.textContent = "Login";
-      loginBtn.disabled = false;
-    }
-
-  } catch (error) {
-
-    // Friendly Error Handling
-    let message = "Login failed. Please try again.";
-
-    switch (error.code) {
-      case "auth/invalid-email":
-        message = "Invalid email format.";
-        break;
-      case "auth/user-not-found":
-        message = "User not found.";
-        break;
-      case "auth/wrong-password":
-        message = "Incorrect password.";
-        break;
-      case "auth/invalid-credential":
-        message = "Invalid credentials.";
-        break;
-      case "auth/too-many-requests":
-        message = "Too many attempts. Try again later.";
-        break;
-    }
-
-    loginStatus.style.color = "#f87171";
-    loginStatus.textContent = message;
-
-    loginBtn.textContent = "Login";
-    loginBtn.disabled = false;
+  if (!rollNo) {
+    alert("Login Required");
+    window.location.href = "login.html";
+    return;
   }
+
+  const studentSnap = await getDoc(doc(db, "students", rollNo));
+  if (!studentSnap.exists()) {
+    alert("Student not found");
+    return;
+  }
+
+  currentStudent = studentSnap.data();
+  loadProfile();
+  loadMarks();
 });
 
-/* =========================================================
-   FORGOT PASSWORD FUNCTION
-========================================================= */
 
-const resetBtn = document.getElementById("resetPasswordBtn");
-const resetEmail = document.getElementById("resetEmail");
-const resetStatus = document.getElementById("resetStatus");
+/* ============================= */
+/* PROFILE */
+/* ============================= */
 
-if (resetBtn) {
-  resetBtn.addEventListener("click", async () => {
+function loadProfile() {
+  document.getElementById("profileCard").innerHTML = `
+    <h3>${currentStudent.name}</h3>
+    <p>Roll No: ${currentStudent.rollNo}</p>
+    <p>Batch: ${currentStudent.batch}</p>
+  `;
+}
 
-    const email = resetEmail.value.trim();
 
-    if (!email) {
-      resetStatus.style.color = "#f87171";
-      resetStatus.textContent = "Please enter your registered email.";
-      return;
-    }
+/* ============================= */
+/* LOAD MARKS */
+/* ============================= */
 
-    try {
-      await sendPasswordResetEmail(auth, email);
+async function loadMarks() {
+  const markSnap = await getDoc(doc(db, "marks", currentStudent.rollNo));
+  if (!markSnap.exists()) return;
 
-      resetStatus.style.color = "#22c55e";
-      resetStatus.textContent = "Password reset email sent successfully.";
+  const marks = markSnap.data();
 
-    } catch (error) {
+  populateTable("theoryMarksTable", marks.theory);
+  populateTable("practicalMarksTable", marks.practical);
+  populateTable("cat2MarksTable", marks.cat2);
+}
 
-      let message = "Failed to send reset email.";
+function populateTable(tableId, data) {
+  const table = document.getElementById(tableId);
+  table.innerHTML = "";
 
-      if (error.code === "auth/user-not-found") {
-        message = "No user found with this email.";
-      }
+  for (let subject in data) {
+    table.innerHTML += `
+      <tr>
+        <td>${subject.toUpperCase()}</td>
+        <td>${data[subject]}</td>
+      </tr>
+    `;
+  }
+}
 
-      resetStatus.style.color = "#f87171";
-      resetStatus.textContent = message;
+
+/* ============================= */
+/* PASSKEY ATTENDANCE */
+/* ============================= */
+
+window.submitPasskey = async function () {
+
+  const passkey = document.getElementById("passkeyInput").value.trim();
+  if (!passkey) return alert("Enter Passkey");
+
+  const querySnapshot = await getDocs(collection(db, "attendanceSessions"));
+
+  let validSession = null;
+
+  querySnapshot.forEach(docSnap => {
+    const data = docSnap.data();
+
+    if (
+      data.passkey === passkey &&
+      data.active === true &&
+      new Date(data.expiresAt.toDate()) > new Date()
+    ) {
+      validSession = { id: docSnap.id, ...data };
     }
   });
-}
+
+  if (!validSession) {
+    document.getElementById("attendanceStatus").innerText =
+      "❌ Invalid or Expired Session";
+    return;
+  }
+
+  await setDoc(
+    doc(db, "attendanceRecords", validSession.id, currentStudent.rollNo),
+    {
+      rollNo: currentStudent.rollNo,
+      time: serverTimestamp()
+    }
+  );
+
+  document.getElementById("attendanceStatus").innerText =
+    "✅ Attendance Marked Successfully";
+};
+
+
+/* ============================= */
+/* QR ATTENDANCE */
+/* ============================= */
+
+window.startQR = function () {
+
+  const qrScanner = new Html5Qrcode("reader");
+
+  qrScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    async (decodedText) => {
+
+      // decodedText = sessionId
+      const sessionSnap = await getDoc(doc(db, "attendanceSessions", decodedText));
+
+      if (!sessionSnap.exists()) {
+        document.getElementById("attendanceStatus").innerText =
+          "❌ Invalid QR";
+        return;
+      }
+
+      const session = sessionSnap.data();
+
+      if (
+        session.active === true &&
+        new Date(session.expiresAt.toDate()) > new Date()
+      ) {
+
+        await setDoc(
+          doc(db, "attendanceRecords", decodedText, currentStudent.rollNo),
+          {
+            rollNo: currentStudent.rollNo,
+            time: serverTimestamp()
+          }
+        );
+
+        document.getElementById("attendanceStatus").innerText =
+          "✅ QR Attendance Marked";
+
+        qrScanner.stop();
+      } else {
+        document.getElementById("attendanceStatus").innerText =
+          "❌ Session Expired";
+      }
+    }
+  );
+};
+
+
+/* ============================= */
+/* NAVIGATION */
+/* ============================= */
+
+window.showSection = function (id) {
+  document.querySelectorAll(".section").forEach(sec => {
+    sec.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+  document.getElementById("pageTitle").innerText =
+    document.getElementById(id).querySelector("h3").innerText;
+};
+
+window.logout = function () {
+  localStorage.removeItem("studentRoll");
+  window.location.href = "login.html";
+};
