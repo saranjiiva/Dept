@@ -98,14 +98,19 @@ function showSection(id) {
 }
 
 /* ===============================
-   PASSKEY ATTENDANCE
+   FIREBASE IMPORTS
 ================================= */
-function submitPasskey() {
+import { db } from "./firebase.js";
+import { collection, doc, getDocs, getDoc, setDoc, query, where } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+/* ===============================
+   PASSKEY ATTENDANCE (LIVE)
+================================= */
+async function submitPasskey() {
+
   const input = document.getElementById("passkeyInput").value.trim();
   const status = document.getElementById("attendanceStatus");
-
-  const validPasskey = localStorage.getItem("activePasskey"); 
-  // Admin must set this during attendance session
 
   if (!input) {
     status.innerText = "Please enter passkey.";
@@ -113,65 +118,157 @@ function submitPasskey() {
     return;
   }
 
-  if (input === validPasskey) {
+  try {
+
+    // 🔍 Check if session exists
+    const sessionRef = doc(db, "attendanceSessions", input);
+    const sessionSnap = await getDoc(sessionRef);
+
+    if (!sessionSnap.exists()) {
+      status.innerText = "Invalid or expired session ❌";
+      status.style.color = "red";
+      return;
+    }
+
+    const sessionData = sessionSnap.data();
+
+    // ⏳ Check expiry
+    if (sessionData.expiresAt.toMillis() < Date.now()) {
+      status.innerText = "Session expired ❌";
+      status.style.color = "red";
+      return;
+    }
+
+    // 🔒 Prevent duplicate attendance
+    const attendanceRef = doc(
+      db,
+      "attendanceRecords",
+      input,
+      "students",
+      student.id
+    );
+
+    const attendanceSnap = await getDoc(attendanceRef);
+
+    if (attendanceSnap.exists()) {
+      status.innerText = "Attendance already marked ⚠";
+      status.style.color = "orange";
+      return;
+    }
+
+    // ✅ Mark Attendance
+    await setDoc(attendanceRef, {
+      name: student.name,
+      studentId: student.id,
+      method: "Passkey",
+      time: new Date()
+    });
+
     status.innerText = "Attendance Marked Successfully ✅";
     status.style.color = "green";
 
-    // Example update
-    student.theoryAttendance = parseInt(student.theoryAttendance) + 1;
-
-  } else {
-    status.innerText = "Invalid Passkey ❌";
+  } catch (error) {
+    console.error(error);
+    status.innerText = "Error marking attendance.";
     status.style.color = "red";
   }
 }
 
 /* ===============================
-   QR ATTENDANCE
+   QR ATTENDANCE (LIVE)
 ================================= */
 let html5QrCode;
 
 function startQR() {
+
   const status = document.getElementById("attendanceStatus");
 
   html5QrCode = new Html5Qrcode("reader");
 
   Html5Qrcode.getCameras().then(devices => {
-    if (devices && devices.length) {
 
-      html5QrCode.start(
-        devices[0].id,
-        {
-          fps: 10,
-          qrbox: 250
-        },
-        qrCodeMessage => {
+    if (!devices.length) {
+      status.innerText = "No camera found.";
+      status.style.color = "red";
+      return;
+    }
 
-          const validQR = localStorage.getItem("activeQR");
+    html5QrCode.start(
+      devices[0].id,
+      { fps: 10, qrbox: 250 },
 
-          if (qrCodeMessage === validQR) {
-            status.innerText = "QR Attendance Marked ✅";
-            status.style.color = "green";
-          } else {
-            status.innerText = "Invalid QR Code ❌";
+      async (qrCodeMessage) => {
+
+        try {
+
+          const sessionRef = doc(db, "attendanceSessions", qrCodeMessage);
+          const sessionSnap = await getDoc(sessionRef);
+
+          if (!sessionSnap.exists()) {
+            status.innerText = "Invalid QR ❌";
             status.style.color = "red";
+            html5QrCode.stop();
+            return;
           }
 
-          html5QrCode.stop();
-        },
-        errorMessage => {
-          console.log("QR Scan Error:", errorMessage);
-        }
-      );
+          const sessionData = sessionSnap.data();
 
-    }
+          // Expiry check
+          if (sessionData.expiresAt.toMillis() < Date.now()) {
+            status.innerText = "Session expired ❌";
+            status.style.color = "red";
+            html5QrCode.stop();
+            return;
+          }
+
+          const attendanceRef = doc(
+            db,
+            "attendanceRecords",
+            qrCodeMessage,
+            "students",
+            student.id
+          );
+
+          const attendanceSnap = await getDoc(attendanceRef);
+
+          if (attendanceSnap.exists()) {
+            status.innerText = "Already Marked ⚠";
+            status.style.color = "orange";
+            html5QrCode.stop();
+            return;
+          }
+
+          await setDoc(attendanceRef, {
+            name: student.name,
+            studentId: student.id,
+            method: "QR",
+            time: new Date()
+          });
+
+          status.innerText = "QR Attendance Marked ✅";
+          status.style.color = "green";
+
+          html5QrCode.stop();
+
+        } catch (error) {
+          console.error(error);
+          status.innerText = "QR Error ❌";
+          status.style.color = "red";
+          html5QrCode.stop();
+        }
+      },
+
+      errorMessage => {
+        console.log("Scan error:", errorMessage);
+      }
+    );
+
   }).catch(err => {
-    console.error("Camera Error:", err);
+    console.error("Camera error:", err);
     status.innerText = "Camera access denied.";
     status.style.color = "red";
   });
 }
-
 /* ===============================
    LOGOUT
 ================================= */
