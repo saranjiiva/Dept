@@ -1,278 +1,146 @@
+import { auth, db } from "..js/firebase.js";
+import { onAuthStateChanged, signOut } from 
+"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { doc, getDoc, setDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
 /* ===============================
    AUTH CHECK
 ================================= */
-if (localStorage.getItem("role") !== "student") {
-  location.href = "index.html";
-}
+let student = null;
 
-const studentId = localStorage.getItem("studentId");
-const student = database.find(s => s.id === studentId);
+onAuthStateChanged(auth, async (user) => {
 
-if (!student) {
-  alert("Student record not found!");
-  location.href = "index.html";
-}
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
+
+  const snap = await getDoc(doc(db, "students", user.uid));
+
+  if (!snap.exists()) {
+    alert("Student record not found");
+    location.href = "index.html";
+    return;
+  }
+
+  student = { uid: user.uid, ...snap.data() };
+  loadProfile();
+});
 
 /* ===============================
-   PROFILE CARD
+   PROFILE
 ================================= */
-const profileCard = document.getElementById("profileCard");
-
-if (profileCard) {
-  profileCard.innerHTML = `
-    <h3>${student.name}</h3>
-    <p><strong>Roll No:</strong> ${student.id}</p>
-    <p><strong>Course:</strong> ${student.course || "MBBS"}</p>
-    <p><strong>Semester:</strong> ${student.semester || "I"}</p>
+function loadProfile() {
+  document.getElementById("profileCard").innerHTML = `
+    <h3>Welcome</h3>
+    <p><strong>Roll No:</strong> ${student.rollNo}</p>
   `;
 }
 
 /* ===============================
-   TABLE GENERATOR FUNCTION
-================================= */
-function generateTable(tableId, dataObj) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-
-  table.innerHTML = `<tr><th>Field</th><th>Value</th></tr>`;
-
-  Object.keys(dataObj).forEach(key => {
-    table.innerHTML += `
-      <tr>
-        <td>${key}</td>
-        <td>${dataObj[key]}</td>
-      </tr>
-    `;
-  });
-}
-
-/* ===============================
-   LOAD ATTENDANCE
-================================= */
-generateTable("monthlyAttendanceTable", {
-  "Theory %": student.theoryAttendance,
-  "Practical %": student.practicalAttendance
-});
-
-generateTable("overallAttendanceTable", {
-  "Overall Theory %": student.theoryAttendance,
-  "Overall Practical %": student.practicalAttendance
-});
-
-/* ===============================
-   LOAD MARKS
-================================= */
-generateTable("theoryMarksTable", {
-  "Internal Theory": student.theoryMarks
-});
-
-generateTable("practicalMarksTable", {
-  "Internal Practical": student.practicalMarks
-});
-
-generateTable("cat1MarksTable", {
-  "CAT 1": student.cat1 || "Not Available"
-});
-
-generateTable("cat2MarksTable", {
-  "CAT 2": student.cat2 || "Not Available"
-});
-
-generateTable("cat3MarksTable", {
-  "CAT 3": student.cat3 || "Not Available"
-});
-
-/* ===============================
-   SECTION SWITCHING
-================================= */
-function showSection(id) {
-  document.querySelectorAll(".section").forEach(sec => {
-    sec.classList.remove("active");
-  });
-
-  document.getElementById(id).classList.add("active");
-
-  const title = document.querySelector(`#${id} h3`);
-  document.getElementById("pageTitle").innerText =
-    title ? title.innerText : "Dashboard";
-}
-
-/* ===============================
-   FIREBASE IMPORTS
-================================= */
-import { db } from "./firebase.js";
-import { collection, doc, getDocs, getDoc, setDoc, query, where } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-/* ===============================
-   PASSKEY ATTENDANCE (LIVE)
+   PASSKEY ATTENDANCE
 ================================= */
 async function submitPasskey() {
 
-  const input = document.getElementById("passkeyInput").value.trim();
+  const passkey = document.getElementById("passkeyInput").value.trim();
   const status = document.getElementById("attendanceStatus");
 
-  if (!input) {
-    status.innerText = "Please enter passkey.";
+  if (!passkey) {
+    status.innerText = "Enter passkey";
     status.style.color = "red";
     return;
   }
 
-  try {
+  const sessionRef = doc(db, "attendanceSessions", passkey);
+  const sessionSnap = await getDoc(sessionRef);
 
-    // 🔍 Check if session exists
-    const sessionRef = doc(db, "attendanceSessions", input);
-    const sessionSnap = await getDoc(sessionRef);
-
-    if (!sessionSnap.exists()) {
-      status.innerText = "Invalid or expired session ❌";
-      status.style.color = "red";
-      return;
-    }
-
-    const sessionData = sessionSnap.data();
-
-    // ⏳ Check expiry
-    if (sessionData.expiresAt.toMillis() < Date.now()) {
-      status.innerText = "Session expired ❌";
-      status.style.color = "red";
-      return;
-    }
-
-    // 🔒 Prevent duplicate attendance
-    const attendanceRef = doc(
-      db,
-      "attendanceRecords",
-      input,
-      "students",
-      student.id
-    );
-
-    const attendanceSnap = await getDoc(attendanceRef);
-
-    if (attendanceSnap.exists()) {
-      status.innerText = "Attendance already marked ⚠";
-      status.style.color = "orange";
-      return;
-    }
-
-    // ✅ Mark Attendance
-    await setDoc(attendanceRef, {
-      name: student.name,
-      studentId: student.id,
-      method: "Passkey",
-      time: new Date()
-    });
-
-    status.innerText = "Attendance Marked Successfully ✅";
-    status.style.color = "green";
-
-  } catch (error) {
-    console.error(error);
-    status.innerText = "Error marking attendance.";
+  if (!sessionSnap.exists()) {
+    status.innerText = "Invalid / expired session";
     status.style.color = "red";
+    return;
   }
+
+  const session = sessionSnap.data();
+
+  if (session.expiresAt.toMillis() < Date.now()) {
+    status.innerText = "Session expired";
+    status.style.color = "red";
+    return;
+  }
+
+  const recordRef = doc(
+    db,
+    "attendanceRecords",
+    passkey,
+    "students",
+    student.uid
+  );
+
+  const recordSnap = await getDoc(recordRef);
+
+  if (recordSnap.exists()) {
+    status.innerText = "Attendance already marked";
+    status.style.color = "orange";
+    return;
+  }
+
+  await setDoc(recordRef, {
+    rollNo: student.rollNo,
+    method: "Passkey",
+    time: serverTimestamp()
+  });
+
+  status.innerText = "Attendance marked successfully ✅";
+  status.style.color = "green";
 }
 
 /* ===============================
-   QR ATTENDANCE (LIVE)
+   QR ATTENDANCE
 ================================= */
 let html5QrCode;
 
 function startQR() {
 
   const status = document.getElementById("attendanceStatus");
-
   html5QrCode = new Html5Qrcode("reader");
 
   Html5Qrcode.getCameras().then(devices => {
-
-    if (!devices.length) {
-      status.innerText = "No camera found.";
-      status.style.color = "red";
-      return;
-    }
 
     html5QrCode.start(
       devices[0].id,
       { fps: 10, qrbox: 250 },
 
-      async (qrCodeMessage) => {
+      async (qrMessage) => {
 
-        try {
-
-          const sessionRef = doc(db, "attendanceSessions", qrCodeMessage);
-          const sessionSnap = await getDoc(sessionRef);
-
-          if (!sessionSnap.exists()) {
-            status.innerText = "Invalid QR ❌";
-            status.style.color = "red";
-            html5QrCode.stop();
-            return;
-          }
-
-          const sessionData = sessionSnap.data();
-
-          // Expiry check
-          if (sessionData.expiresAt.toMillis() < Date.now()) {
-            status.innerText = "Session expired ❌";
-            status.style.color = "red";
-            html5QrCode.stop();
-            return;
-          }
-
-          const attendanceRef = doc(
-            db,
-            "attendanceRecords",
-            qrCodeMessage,
-            "students",
-            student.id
-          );
-
-          const attendanceSnap = await getDoc(attendanceRef);
-
-          if (attendanceSnap.exists()) {
-            status.innerText = "Already Marked ⚠";
-            status.style.color = "orange";
-            html5QrCode.stop();
-            return;
-          }
-
-          await setDoc(attendanceRef, {
-            name: student.name,
-            studentId: student.id,
-            method: "QR",
-            time: new Date()
-          });
-
-          status.innerText = "QR Attendance Marked ✅";
-          status.style.color = "green";
-
-          html5QrCode.stop();
-
-        } catch (error) {
-          console.error(error);
-          status.innerText = "QR Error ❌";
-          status.style.color = "red";
-          html5QrCode.stop();
-        }
-      },
-
-      errorMessage => {
-        console.log("Scan error:", errorMessage);
+        document.getElementById("passkeyInput").value = qrMessage;
+        await submitPasskey();
+        html5QrCode.stop();
       }
     );
 
-  }).catch(err => {
-    console.error("Camera error:", err);
-    status.innerText = "Camera access denied.";
+  }).catch(() => {
+    status.innerText = "Camera permission denied";
     status.style.color = "red";
   });
 }
+
 /* ===============================
    LOGOUT
 ================================= */
 function logout() {
-  localStorage.clear();
+  signOut(auth);
   location.href = "index.html";
 }
+
+/* ===============================
+   SECTION SWITCH
+================================= */
+window.showSection = function(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+};
+
+window.submitPasskey = submitPasskey;
+window.startQR = startQR;
+window.logout = logout;
