@@ -191,16 +191,16 @@ export async function deleteStudent(rollNo) {
 
 }
 // Firebase v10 modular
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { 
   getFirestore, doc, getDoc, setDoc, updateDoc, 
   collection, getDocs, serverTimestamp, Timestamp 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
+ apiKey: "AIzaSyBJOFL_iqY3I4Otu7bxR0l3zFpCC-Z091I",
+  authDomain: "college-attendance-syste-c9ffd.firebaseapp.com",
+  projectId: "college-attendance-syste-c9ffd",
 };
 
 const app = initializeApp(firebaseConfig);
