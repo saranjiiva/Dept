@@ -62,7 +62,7 @@ button {
 
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, setDoc, deleteDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
@@ -73,6 +73,111 @@ const timerDisplay = document.getElementById("timer");
 
 let countdownInterval = null;
 let currentSessionId = null;
+let currentUser = null;
+
+const SESSION_DURATION = 120; // 2 minutes
+
+// 🔐 Verify Admin Login
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    currentUser = user;
+  }
+});
+
+// 🔑 Generate Passkey
+function generatePasskey() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+// ⏱ Countdown Timer
+function startTimer(duration) {
+
+  let time = duration;
+
+  countdownInterval = setInterval(() => {
+
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (time <= 0) {
+      clearInterval(countdownInterval);
+      stopSession(); // auto stop UI
+    }
+
+    time--;
+
+  }, 1000);
+}
+
+// ▶ START SESSION
+startBtn.addEventListener("click", async () => {
+
+  if (!currentUser) {
+    alert("Not authenticated");
+    return;
+  }
+
+  // If session already running, stop first
+  if (currentSessionId) {
+    await stopSession();
+  }
+
+  const passkey = generatePasskey();
+  currentSessionId = passkey;
+
+  const now = Timestamp.now();
+  const expiresAt = Timestamp.fromMillis(
+    now.toMillis() + (SESSION_DURATION * 1000)
+  );
+
+  passkeyDisplay.innerText = passkey;
+  statusDisplay.innerText = "Session Active";
+  qrContainer.innerHTML = "";
+
+  await setDoc(doc(db, "attendanceSessions", passkey), {
+    passkey: passkey,
+    facultyName: currentUser.displayName || "Faculty",
+    facultyUID: currentUser.uid,
+    createdAt: serverTimestamp(),
+    expiresAt: expiresAt,
+    duration: SESSION_DURATION,
+    active: true
+  });
+
+  // Generate QR
+  new QRCode(qrContainer, {
+    text: passkey,
+    width: 200,
+    height: 200
+  });
+
+  startTimer(SESSION_DURATION);
+});
+
+// ⛔ STOP SESSION
+async function stopSession() {
+
+  if (!currentSessionId) return;
+
+  await deleteDoc(doc(db, "attendanceSessions", currentSessionId));
+
+  statusDisplay.innerText = "Session Ended";
+  passkeyDisplay.innerText = "----";
+  qrContainer.innerHTML = "";
+  timerDisplay.innerText = "--";
+
+  clearInterval(countdownInterval);
+  currentSessionId = null;
+}
+
+stopBtn.addEventListener("click", stopSession);
+
+</script>
+
 
 // 🔐 Verify Admin
 onAuthStateChanged(auth, async (user) => {
