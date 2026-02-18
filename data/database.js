@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db } from "./js/firebase.js";
 
 import {
   collection,
@@ -190,7 +190,23 @@ export async function deleteStudent(rollNo) {
   }
 
 }
+// Firebase v10 modular
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getFirestore, doc, getDoc, setDoc, updateDoc, 
+  collection, getDocs, serverTimestamp, Timestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { db, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, Timestamp };
 
 // ======================================================
 // 📌 9️⃣ EXCEL JSON FORMAT (FOR EASY UPLOAD)
